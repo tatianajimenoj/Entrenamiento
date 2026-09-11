@@ -232,6 +232,54 @@
   .day.logged .saved{display:flex}
   .day.logged .btn-log{display:none}
 
+  /* ---------- menú de alimentación ---------- */
+  .seg{display:flex;gap:5px;margin:18px 0 6px;flex-wrap:wrap}
+  .seg button{
+    appearance:none;cursor:pointer;font-family:inherit;
+    font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:9px;
+    border:1px solid var(--rule);background:#fff;color:var(--ink-soft);
+  }
+  .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .seg button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .seg-note{font-size:12.5px;color:var(--ink-faint);margin:0 0 18px}
+
+  .mday{
+    background:#fff;border:1px solid var(--rule);border-radius:var(--radius);
+    margin-bottom:7px;overflow:hidden;
+  }
+  .mday[open]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .mday > summary{
+    list-style:none;cursor:pointer;padding:13px 14px;
+    display:flex;align-items:center;gap:10px;
+    font-weight:600;font-size:15.5px;
+  }
+  .mday > summary::-webkit-details-marker{display:none}
+  .mday > summary::after{
+    content:'';margin-left:auto;width:9px;height:9px;flex:0 0 auto;
+    border-right:2.2px solid var(--ink-faint);border-bottom:2.2px solid var(--ink-faint);
+    transform:rotate(45deg);transition:transform .2s;
+  }
+  .mday[open] > summary::after{transform:rotate(225deg)}
+  .hoy{
+    font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    background:var(--accent);color:#fff;padding:2px 7px;border-radius:5px;
+  }
+  .meals{
+    border-top:1px solid var(--rule);padding:6px 14px 14px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:2px 22px;
+  }
+  .meal{padding:12px 0 2px}
+  .meal h5{
+    margin:0 0 6px;font-size:11.5px;font-weight:700;letter-spacing:.03em;
+    text-transform:uppercase;color:var(--accent);
+  }
+  .meal ul{margin:0;padding-left:17px}
+  .meal li{font-size:14px;line-height:1.5;margin-bottom:2px}
+  .meal li b{font-weight:600}
+  .meal li ul{margin:3px 0 4px;padding-left:15px}
+  .meal li ul li{font-size:13.3px;color:var(--ink-soft);margin-bottom:1px}
+  .meal .libre{color:var(--ink-faint)}
+
   /* ---------- registro ---------- */
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:9px;margin:20px 0 24px}
   .stat{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);padding:13px 15px}
@@ -293,17 +341,90 @@
     margin-top:20px;font-size:12.5px;color:var(--ink-faint);max-width:66ch;line-height:1.5;
   }
 
-  /* ---------- aviso visual de fin de timer ---------- */
-  .flash{
-    position:fixed;inset:0;z-index:90;
-    display:none;place-items:center;
-    background:#D02B4EF2;color:#fff;
-    font-family:'Archivo Narrow','Archivo',sans-serif;
-    font-size:clamp(44px,13vw,90px);font-weight:700;letter-spacing:-.02em;
-    pointer-events:none;
+  /* ---------- botón de secuencia automática ---------- */
+  .autos{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+  .auto{
+    appearance:none;cursor:pointer;font-family:inherit;
+    display:inline-flex;align-items:center;gap:9px;
+    background:var(--accent);color:#fff;border:0;
+    padding:10px 15px;border-radius:10px;
+    font-size:13.5px;font-weight:600;
   }
-  .flash.on{display:grid;animation:flashIn .28s ease-out}
-  @keyframes flashIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+  .auto svg{width:13px;height:13px;fill:currentColor;flex:0 0 auto}
+  .auto b{
+    font-weight:600;font-size:12px;opacity:.85;
+    padding-left:9px;margin-left:2px;border-left:1px solid #ffffff59;
+    font-variant-numeric:tabular-nums;
+  }
+  .auto:active{opacity:.85}
+  .auto:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .block-head + .autos{margin-top:0;margin-bottom:12px}
+
+  /* ---------- temporizador a pantalla completa ---------- */
+  .tfs{
+    position:fixed;inset:0;z-index:100;
+    display:none;flex-direction:column;
+    background:var(--tcolor,#6E4BB8);color:#fff;
+    padding:calc(env(safe-area-inset-top,0px) + 16px)
+            calc(env(safe-area-inset-right,0px) + 18px)
+            calc(env(safe-area-inset-bottom,0px) + 24px)
+            calc(env(safe-area-inset-left,0px) + 18px);
+    transition:background .28s ease;
+  }
+  .tfs.on{display:flex}
+  .tfs-top{position:relative}
+  .tfs.alerta{background:var(--alert)}
+  .tfs-top{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+  .tfs-label{font-size:14.5px;font-weight:600;opacity:.92;letter-spacing:.01em}
+  .tfs-exit{
+    margin-left:auto;appearance:none;cursor:pointer;
+    width:44px;height:44px;border-radius:50%;
+    border:1.5px solid #ffffff5c;background:#ffffff20;color:#fff;
+    display:grid;place-items:center;padding:0;
+  }
+  .tfs-exit:active{background:#ffffff3a}
+  .tfs-exit svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round}
+  .tfs-mid{flex:1 1 auto;display:grid;place-content:center;justify-items:center;gap:22px}
+  .tfs-clock{
+    font-family:'Archivo Narrow','Archivo',sans-serif;
+    font-weight:700;font-variant-numeric:tabular-nums;
+    font-size:clamp(78px,31vw,196px);line-height:.88;letter-spacing:-.035em;
+  }
+  .tfs-bar{width:min(76vw,420px);height:6px;border-radius:99px;background:#ffffff3d;overflow:hidden}
+  .tfs-bar i{display:block;height:100%;width:100%;background:#fff;border-radius:99px;transition:width .25s linear}
+  .tfs-msg{font-size:19px;font-weight:600;min-height:27px;opacity:.95;text-align:center}
+  .tfs-ctrl{flex:0 0 auto;display:flex;gap:10px;justify-content:center}
+  .tfs-btn{
+    appearance:none;cursor:pointer;font-family:inherit;
+    font-size:16px;font-weight:600;padding:15px 24px;border-radius:12px;
+    border:1.5px solid #ffffff66;background:#ffffff22;color:#fff;
+    flex:1 1 0;max-width:200px;
+  }
+  .tfs-btn:active{background:#ffffff3a}
+  .tfs-btn.primary{background:#fff;color:var(--tcolor,#6E4BB8);border-color:#fff}
+  .tfs.alerta .tfs-btn.primary{color:var(--alert)}
+  .tfs-btn[hidden]{display:none}
+  .tfs.reposo{background:color-mix(in srgb, var(--tcolor) 55%, #1A1526)}
+  .tfs-global{position:absolute;top:0;left:0;right:0;height:4px;background:#ffffff2e}
+  .tfs-global i{display:block;height:100%;width:0;background:#fff;transition:width .3s linear}
+  .tfs-phase{
+    font-size:clamp(19px,5.4vw,27px);font-weight:700;text-align:center;
+    letter-spacing:-.01em;line-height:1.2;max-width:22ch;
+  }
+  .tfs-meta{font-size:14.5px;font-weight:600;opacity:.9;text-align:center;min-height:20px}
+  .tfs-next{font-size:14px;opacity:.72;text-align:center;min-height:20px;max-width:26ch}
+  .tfs-prev,.tfs-skip{flex:0 0 auto;max-width:none;width:60px;padding:15px 0;display:grid;place-items:center}
+  .tfs-prev svg,.tfs-skip svg{width:19px;height:19px;fill:currentColor}
+  .tfs-toggle{flex:1 1 auto;max-width:230px}
+  .tfs-reset{
+    appearance:none;cursor:pointer;font-family:inherit;
+    margin:14px auto 0;display:block;background:none;border:0;
+    color:#fff;opacity:.72;font-size:13.5px;font-weight:600;
+    text-decoration:underline;text-underline-offset:3px;
+  }
+  .tfs-reset[hidden]{display:none}
+  .tfs.simple .tfs-mid{gap:20px}
+  body.locked{overflow:hidden}
 
   footer{
     margin-top:46px;padding-top:18px;border-top:1px solid var(--rule);
@@ -684,6 +805,146 @@ function specListHTML(spec){
   }).join('') + '</ul>';
 }
 
+/* ============================================================
+   Planes de secuencia automática
+
+   Una secuencia es una lista de fases: prepárate, trabajo y descanso.
+   De ahí sale tanto el sonido como lo que se ve en pantalla.
+   ============================================================ */
+
+const PLANES = [];
+
+function registraPlan(titulo, fases){
+  if(!fases || fases.length < 2) return null;
+  PLANES.push({ titulo, fases });
+  return PLANES.length - 1;
+}
+
+function duracionPlan(fases){
+  return fases.reduce((a,f)=>a+f.secs, 0);
+}
+
+function fmtLargo(s){
+  if(s < 60) return s + ' s';
+  const m = Math.floor(s/60), r = s%60;
+  if(m < 10 && r) return m + ':' + String(r).padStart(2,'0') + ' min';
+  return Math.round(s/60) + ' min';
+}
+
+/* "0:30 por pierna" son dos fases, una por lado. */
+function ladosDe(txt){
+  return /por (brazo|pierna|lado)/i.test(txt || '') ? 2 : 1;
+}
+
+/* Solo hay temporizador donde el plan fija un tiempo. Los ejercicios por
+   repeticiones se dejan libres: estimar cuánto tardan sería inventarlo. */
+function trabajoDe(spec){
+  if(!spec) return null;
+  const t = parseDur(spec.tiempo);
+  if(!t || t > 600) return null;
+  return { secs: t, lados: ladosDe(spec.tiempo) };
+}
+
+const NOMBRE_LADO = {
+  brazo:  ['brazo derecho', 'brazo izquierdo'],
+  pierna: ['pierna derecha', 'pierna izquierda'],
+  lado:   ['primer lado', 'segundo lado']
+};
+
+/* Devuelve una fase de trabajo, o dos si el ejercicio es por lado. */
+function fasesTrabajo(nombre, info, spec, extra){
+  if(!info) return [];
+  const base = Object.assign({tipo:'trabajo', secs:info.secs, nombre}, extra);
+  if(info.lados < 2) return [base];
+  const txt = (spec && ((spec.tiempo||'') + ' ' + (spec.reps||''))) || '';
+  const clave = /brazo/i.test(txt) ? 'brazo' : /pierna/i.test(txt) ? 'pierna' : 'lado';
+  const nombres = NOMBRE_LADO[clave];
+  return nombres.map(n => Object.assign({}, base, {nombre: nombre + ' · ' + n}));
+}
+
+const PREP = { tipo:'prep', secs:5, nombre:'Prepárate' };
+
+/* Rellena el campo `sigue` de cada fase mirando la que viene después. */
+function encadena(fases){
+  for(let i=0; i<fases.length; i++){
+    const prox = fases[i+1];
+    if(!prox){ fases[i].sigue = null; continue; }
+    fases[i].sigue = prox.tipo === 'trabajo' ? prox.nombre : NOMBRE_FASE_CORTO[prox.tipo];
+  }
+  return fases;
+}
+const NOMBRE_FASE_CORTO = {prep:'Prepárate', descanso:'Descanso', serie:'Descanso entre series'};
+
+/* Circuito: varias series de una lista de ejercicios con pausa entre ellos. */
+function fasesCircuito(ex){
+  if(!ex.circuit || !ex.spec) return null;
+  const series = parseInt(ex.spec.series, 10) || 1;
+  const work   = parseDur(ex.spec.tiempo) || 30;
+  const pausa  = parseDur(ex.spec['descanso entre ejercicios']) || 20;
+  const entre  = parseDur(ex.spec['descanso entre series']) || 60;
+  const lista  = ex.circuit;
+  const f = [Object.assign({}, PREP)];
+  for(let s=1; s<=series; s++){
+    lista.forEach((c,i)=>{
+      f.push({tipo:'trabajo', secs:work, nombre:c.name,
+              serie:s, series, idx:i+1, total:lista.length});
+      if(i < lista.length-1){
+        f.push({tipo:'descanso', secs:pausa, nombre:'Descanso', serie:s, series});
+      }
+    });
+    if(s < series){
+      f.push({tipo:'serie', secs:entre, nombre:'Descanso entre series', serie:s, series});
+    }
+  }
+  return encadena(f);
+}
+
+/* Un solo ejercicio con varias rondas y descanso entre ellas. */
+function fasesRondas(ex){
+  if(!ex.spec || ex.circuit) return null;
+  const rondas = parseInt(ex.spec.rondas, 10) || 0;
+  const info = trabajoDe(ex.spec);
+  const desc = parseDur(ex.spec.descanso);
+  if(rondas < 2 || !info || !desc) return null;
+  const f = [Object.assign({}, PREP)];
+  for(let r=1; r<=rondas; r++){
+    fasesTrabajo(ex.name, info, ex.spec, {serie:r, series:rondas})
+      .forEach(t=>f.push(t));
+    if(r < rondas){
+      f.push({tipo:'descanso', secs:desc, nombre:'Descanso', serie:r, series:rondas});
+    }
+  }
+  return encadena(f);
+}
+
+/* Calentamiento y enfriamiento: ejercicios por tiempo, seguidos, sin pausa. */
+function fasesBloque(b){
+  const items = (b.items||[]).filter(it=>{
+    const d = it.spec && parseDur(it.spec.tiempo);
+    return d && d <= 600 && !it.circuit;
+  });
+  if(items.length < 2) return null;
+  const m = String(b.meta||'').match(/(\d+)\s*ronda/i);
+  const rondas = m ? parseInt(m[1],10) : 1;
+  const f = [Object.assign({}, PREP)];
+  for(let r=1; r<=rondas; r++){
+    items.forEach((it,i)=>{
+      fasesTrabajo(it.name, trabajoDe(it.spec), it.spec,
+                   {serie:r, series:rondas, idx:i+1, total:items.length})
+        .forEach(t=>f.push(t));
+    });
+  }
+  return encadena(f);
+}
+
+function autoBtnHTML(id, texto, fases){
+  if(id === null) return '';
+  return `<button class="auto" type="button" data-plan="${id}">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+    <span>${esc(texto)}</span><b>${fmtLargo(duracionPlan(fases))}</b>
+  </button>`;
+}
+
 function timerBtn(label, secs){
   return `<button class="timer" type="button" data-secs="${secs}" data-init="${secs}">
     <span class="tlabel">${esc(label)}</span><span class="tclock">${fmt(secs)}</span>
@@ -737,6 +998,12 @@ function exerciseHTML(ex){
         <p>${esc(ex.cues)}</p>
         ${specListHTML(ex.spec)}
         ${timersHTML(ex.spec)}
+        ${(()=>{
+          const fases = ex.circuit ? fasesCircuito(ex) : fasesRondas(ex);
+          const id = registraPlan(ex.circuit ? 'Circuito de piso pélvico' : ex.name, fases);
+          return id===null ? '' : `<div class="autos">${autoBtnHTML(id,
+            ex.circuit ? 'Circuito automático' : 'Serie automática', fases)}</div>`;
+        })()}
       </div>
       ${ex.circuit?circuitHTML(ex.circuit):''}
     </div>
@@ -753,10 +1020,175 @@ function blockHTML(b){
     }
     return exerciseHTML(it);
   }).join('');
+  const fb = fasesBloque(b);
+  const idb = registraPlan(b.title, fb);
   return `<section class="block">
     <div class="block-head"><h3>${esc(b.title)}</h3><span class="meta">${esc(b.meta)}</span></div>
+    ${idb===null ? '' : `<div class="autos">${autoBtnHTML(idb, b.title + ' completo', fb)}</div>`}
     ${body}
   </section>`;
+}
+
+/* ============================================================
+   Menú de alimentación
+
+   Dos quincenas, transcritas de las tablas del plan nutricional.
+   q1 = días 1 al 15 del mes · q2 = días 16 en adelante.
+   ============================================================ */
+
+const COMIDAS = [
+  ['desayuno', 'Desayuno'],
+  ['snack1',   'Snack de la mañana'],
+  ['almuerzo', 'Almuerzo'],
+  ['snack2',   'Snack de la tarde'],
+  ['cena',     'Cena']
+];
+
+const DIAS_MENU = [
+  ['lun','Lunes'], ['mar','Martes'], ['mie','Miércoles'], ['jue','Jueves'],
+  ['vie','Viernes'], ['sab','Sábado'], ['dom','Domingo']
+];
+
+const PANCAKES_CACAO = { receta:'Pancakes de avena', ingredientes:[
+  '2 huevos', '1 banano', '3 cucharadas de avena',
+  '1 cucharada pequeña de cacao', '2 cucharadas de yogur griego'] };
+
+const PANCAKES_VAINILLA = { receta:'Pancakes de avena', ingredientes:[
+  '2 huevos', '1 banano', '3 cucharadas de avena',
+  '1 cucharada pequeña de vainilla', '2 cucharadas de yogur griego'] };
+
+const MENU = {
+  q1: {
+    lun: {
+      desayuno:['2-3 huevos','1 rebanada de pan integral','1 loncha de queso mozzarella (30 g)'],
+      snack1:['1 taza de yogur griego (100 g)','20 arándanos'],
+      almuerzo:['Proteína libre','½ taza de frijoles (120 g)','Ensalada libre + ¼ de aguacate'],
+      snack2:['1 manzana'],
+      cena:['Proteína libre','½ taza de frijoles (120 g)','Ensalada libre + ¼ de aguacate']
+    },
+    mar: {
+      desayuno:['2-3 huevos','1 banano','1 cucharada de mantequilla de maní'],
+      snack1:['1 mango'],
+      almuerzo:['Proteína libre','¼ de plátano (120 g)','Ensalada libre + ¼ de aguacate'],
+      snack2:['1 taza de yogur griego (100 g)','1 kiwi'],
+      cena:['Pollo','Ensalada libre sin aguacate']
+    },
+    mie: {
+      desayuno:[PANCAKES_CACAO],
+      snack1:['1 manzana','1 cucharada de mantequilla de maní'],
+      almuerzo:['Proteína libre','2 papas (120 g)','Ensalada libre sin aguacate'],
+      snack2:['10 fresas'],
+      cena:['Atún','1 papa (60 g)','Ensalada libre + ¼ de aguacate']
+    },
+    jue: {
+      desayuno:['2-3 huevos','1 rebanada de pan integral','¼ de aguacate'],
+      snack1:['1 taza de yogur griego (100 g)','1 kiwi'],
+      almuerzo:['Proteína libre','½ taza de arroz integral (120 g)','Ensalada libre + ¼ de aguacate'],
+      snack2:['1 banano','1 cucharada de mantequilla de maní'],
+      cena:['Carne','Ensalada libre sin aguacate']
+    },
+    vie: {
+      desayuno:['3 huevos pericos','1 loncha de jamón','1 loncha de queso','1 mango'],
+      snack1:['1 banano','1 cucharada de mantequilla de maní'],
+      almuerzo:['Proteína libre','½ taza de lentejas (120 g)','Ensalada libre sin aguacate'],
+      snack2:['1 taza de yogur griego (100 g)','1 durazno'],
+      cena:['2 huevos','1 rebanada de pan integral','Opcional: ensalada libre sin aguacate']
+    },
+    sab: {
+      desayuno:['2-3 huevos','1 rebanada de pan integral','1 loncha de queso mozzarella (30 g)'],
+      snack1:['1 taza de yogur griego (100 g)','10 fresas'],
+      almuerzo:['Proteína libre','½ taza de pasta integral (120 g)','Ensalada libre + ¼ de aguacate'],
+      snack2:['1 taza de maíz pira'],
+      cena:['Pollo','Ensalada libre sin aguacate']
+    },
+    dom: {
+      desayuno:['2-3 huevos','1 banano','1 cucharada de mantequilla de maní'],
+      snack1:['Sin snack'],
+      almuerzo:['Comida libre con postre'],
+      snack2:['2 tazas de gelatina sin azúcar'],
+      cena:['Proteína libre','Ensalada libre + ¼ de aguacate']
+    }
+  },
+
+  q2: {
+    lun: {
+      desayuno:['3 huevos pericos','1 loncha de jamón','1 loncha de queso','1 mango'],
+      snack1:['10 fresas'],
+      almuerzo:['Proteína libre','½ taza de arroz integral (120 g)','Ensalada libre + ¼ de aguacate'],
+      snack2:['1 taza de yogur griego (100 g)','20 arándanos'],
+      cena:['2 huevos','1 rebanada de pan integral','Opcional: ensalada libre sin aguacate']
+    },
+    mar: {
+      desayuno:[PANCAKES_VAINILLA],
+      snack1:['1 taza de yogur griego (100 g)','1 kiwi'],
+      almuerzo:['Proteína libre','1 papa (60 g)','Ensalada libre sin aguacate'],
+      snack2:['1 manzana','1 cucharada de mantequilla de maní'],
+      cena:['Atún','Ensalada libre + ¼ de aguacate']
+    },
+    mie: {
+      desayuno:['2-3 huevos','1 rebanada de pan integral','1 loncha de queso mozzarella (30 g)'],
+      snack1:['1 mango'],
+      almuerzo:['Proteína libre','½ taza de quinoa (120 g)','Ensalada libre + ¼ de aguacate'],
+      snack2:['1 taza de yogur griego (100 g)','20 arándanos'],
+      cena:['Carne','¼ de taza de quinoa (60 g)','Ensalada libre sin aguacate']
+    },
+    jue: {
+      desayuno:['2-3 huevos','1 taza de yogur griego (100 g)','10 fresas'],
+      snack1:['1 mandarina'],
+      almuerzo:['Proteína libre','¼ de plátano (120 g)','Ensalada libre sin aguacate'],
+      snack2:['1 banano','1 cucharada de mantequilla de maní'],
+      cena:['Pollo','Ensalada libre sin aguacate']
+    },
+    vie: {
+      desayuno:['2-3 huevos','1 rebanada de pan integral','1 loncha de queso mozzarella (30 g)'],
+      snack1:['1 manzana'],
+      almuerzo:['Proteína libre','½ taza de arroz integral (120 g)','Ensalada libre + ¼ de aguacate'],
+      snack2:['1 taza de yogur griego (100 g)','20 arándanos'],
+      cena:['Carne','¼ de taza de arroz integral (60 g)','Ensalada libre sin aguacate']
+    },
+    sab: {
+      desayuno:['2-3 huevos','1 banano','1 cucharada de mantequilla de maní'],
+      snack1:['1 taza de yogur griego (100 g)','1 kiwi'],
+      almuerzo:['Proteína libre','2 papas (120 g)','Ensalada libre sin aguacate'],
+      snack2:['1 taza de maíz pira'],
+      cena:['2-3 huevos','Ensalada libre sin aguacate']
+    },
+    dom: {
+      desayuno:[PANCAKES_VAINILLA],
+      snack1:['Sin snack'],
+      almuerzo:['Comida libre con postre'],
+      snack2:['2 tazas de gelatina sin azúcar'],
+      cena:['Proteína libre','Ensalada libre + ¼ de aguacate']
+    }
+  }
+};
+
+/* Del 1 al 15 va la primera quincena; del 16 en adelante, la segunda. */
+function quincenaDeHoy(){
+  return new Date().getDate() <= 15 ? 'q1' : 'q2';
+}
+function claveDeHoy(){
+  return ['dom','lun','mar','mie','jue','vie','sab'][new Date().getDay()];
+}
+
+function itemHTML(it){
+  if(typeof it === 'string') return `<li>${esc(it)}</li>`;
+  return `<li><b>${esc(it.receta)}</b><ul>${
+    it.ingredientes.map(g=>`<li>${esc(g)}</li>`).join('')
+  }</ul></li>`;
+}
+
+function comidasHTML(dayKey, quincena){
+  const m = MENU[quincena] && MENU[quincena][dayKey];
+  if(!m) return '';
+  return '<div class="meals">' + COMIDAS.map(([k,label])=>{
+    const items = m[k] || [];
+    if(!items.length) return '';
+    return `<div class="meal">
+      <h5>${label}</h5>
+      <ul>${items.map(itemHTML).join('')}</ul>
+    </div>`;
+  }).join('') + '</div>';
 }
 
 /* ============================================================
@@ -801,6 +1233,20 @@ DAYS.forEach((d,i)=>{
   daysEl.appendChild(p);
   p.querySelectorAll('.ex').forEach((el,n)=>{ el.dataset.ex = n; });
   p.dataset.key = d.key;
+
+  /* La comida que toca este día, según la quincena en la que estemos */
+  const q = quincenaDeHoy();
+  const comida = document.createElement('section');
+  comida.className = 'block';
+  comida.innerHTML = `
+    <div class="block-head">
+      <h3>Comidas de este día</h3>
+      <span class="meta">${q==='q1' ? 'primera quincena · días 1 al 15' : 'segunda quincena · del 16 en adelante'}</span>
+    </div>
+    <div class="mday" style="border-color:var(--rule)">
+      ${comidasHTML(d.key, q).replace('<div class="meals">','<div class="meals" style="border-top:0">')}
+    </div>`;
+  p.appendChild(comida);
 });
 
 /* ============================================================
@@ -869,6 +1315,64 @@ function dayEntry(date, key, create){
   return LOG[date][key];
 }
 
+/* --- pestaña Menú --- */
+const MENU_ACCENT = '#1F8399';
+let quincenaVista = quincenaDeHoy();
+
+const menuTab = document.createElement('button');
+menuTab.className='tab'; menuTab.type='button'; menuTab.setAttribute('role','tab');
+menuTab.setAttribute('aria-selected','false');
+menuTab.setAttribute('aria-controls','panel-menu');
+menuTab.style.setProperty('--tabc', MENU_ACCENT);
+menuTab.innerHTML = 'Menú<small>qué comer cada día</small>';
+menuTab.addEventListener('click', ()=>select(DAYS.length));
+tabsEl.appendChild(menuTab);
+
+const menuPanel = document.createElement('section');
+menuPanel.className='day'; menuPanel.id='panel-menu';
+menuPanel.setAttribute('role','tabpanel');
+menuPanel.style.setProperty('--accent', MENU_ACCENT);
+menuPanel.style.setProperty('--accent-wash', MENU_ACCENT+'1f');
+daysEl.appendChild(menuPanel);
+
+function renderMenu(){
+  const hoy = claveDeHoy();
+  const esQuincenaDeHoy = quincenaVista === quincenaDeHoy();
+
+  const dias = DIAS_MENU.map(([k,nombre])=>{
+    const marcar = esQuincenaDeHoy && k === hoy;
+    return `<details class="mday"${marcar?' open':''}>
+      <summary>${nombre}${marcar?' <span class="hoy">hoy</span>':''}</summary>
+      ${comidasHTML(k, quincenaVista)}
+    </details>`;
+  }).join('');
+
+  menuPanel.innerHTML = `
+    <div class="day-head">
+      <div>
+        <h2>Menú</h2>
+        <div class="focus">Tu plan de alimentación</div>
+      </div>
+    </div>
+
+    <div class="seg">
+      <button type="button" data-q="q1" aria-pressed="${quincenaVista==='q1'}">Días 1 al 15</button>
+      <button type="button" data-q="q2" aria-pressed="${quincenaVista==='q2'}">Días 16 al 30</button>
+    </div>
+    <p class="seg-note">${esQuincenaDeHoy
+      ? 'Es la quincena que te toca hoy. El día de hoy viene abierto.'
+      : 'Estás viendo la otra quincena, no la que corresponde hoy.'}</p>
+
+    ${dias}
+
+    <p class="store-note">Transcrito de las tablas de tu plan nutricional. Las cantidades son las del plan original; cualquier ajuste consúltalo con quien te lo armó.</p>`;
+
+  menuPanel.querySelectorAll('.seg button').forEach(b=>{
+    b.addEventListener('click', ()=>{ quincenaVista = b.dataset.q; renderMenu(); });
+  });
+}
+renderMenu();
+
 /* --- pestaña Registro --- */
 const REG_ACCENT = '#6E4BB8';
 const regTab = document.createElement('button');
@@ -877,7 +1381,7 @@ regTab.setAttribute('aria-selected','false');
 regTab.setAttribute('aria-controls','panel-registro');
 regTab.style.setProperty('--tabc', REG_ACCENT);
 regTab.innerHTML = 'Registro<small>tu historial</small>';
-regTab.addEventListener('click', ()=>select(DAYS.length));
+regTab.addEventListener('click', ()=>select(DAYS.length + 1));
 tabsEl.appendChild(regTab);
 
 const regPanel = document.createElement('section');
@@ -1108,176 +1612,367 @@ function updateProgress(panel){
 }
 [...daysEl.children].forEach(updateProgress);
 
+
 /* ============================================================
-   Timers con cuenta regresiva y pip final
+   Audio: la cuenta final se agenda en el momento del toque
+
+   iOS solo autoriza sonido dentro de un gesto del usuario y bloquea
+   reproducir algo 30 segundos después. La solución es programar de una vez
+   todos los pitidos con el reloj de audio, en el instante en que se pulsa
+   el timer. Cinco pip en los últimos 5 segundos y un tono largo en 00:00.
    ============================================================ */
 
 let actx = null;
+let agendados = [];
 
-/* En iOS, el audio que genera una página va por el canal "ambiente", que el
-   interruptor de silencio apaga. Pedir la categoría 'playback' (Safari 16.4+)
-   lo saca de ahí y suena aunque el teléfono esté en silencio. */
-function sesionDeAudio(){
+function abrirAudio(){
+  /* 'playback' saca el sonido del canal que silencia el interruptor
+     lateral del iPhone. Hay que pedirlo antes de crear el contexto. */
   try{ if(navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(err){}
+  try{
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if(actx.state === 'suspended') actx.resume();
+    /* Un pulso mudo dentro del gesto: es lo que deja el contexto "vivo". */
+    const s = actx.createBufferSource();
+    s.buffer = actx.createBuffer(1, 1, 22050);
+    s.connect(actx.destination);
+    s.start(0);
+  }catch(err){ actx = null; }
+  return !!actx;
 }
 
-/* Un WAV de verdad suena mucho mejor que un oscilador en iOS, porque se puede
-   reproducir 30 segundos después del toque que lo autorizó. Se genera al cargar. */
-function crearWav(){
-  const sr = 44100;
-  const notas = [[880,0.13],[0,0.08],[880,0.13],[0,0.08],[1175,0.34]];
-  let largo = 0;
-  notas.forEach(n => largo += Math.round(n[1]*sr));
-  const muestras = new Int16Array(largo);
-  let i = 0;
-  notas.forEach(([f,dur])=>{
-    const n = Math.round(dur*sr);
-    for(let s=0; s<n; s++, i++){
-      if(!f){ muestras[i] = 0; continue; }
-      const t = s/sr, atk = 0.006, rel = 0.05;
-      let env = 1;
-      if(t < atk) env = t/atk;
-      else if(t > dur-rel) env = Math.max(0,(dur-t)/rel);
-      muestras[i] = Math.round(Math.sin(2*Math.PI*f*t) * 0.7 * env * 32767);
-    }
-  });
-  const bytes = muestras.length*2;
-  const buf = new ArrayBuffer(44+bytes);
-  const v = new DataView(buf);
-  const txt = (o,s)=>{ for(let j=0;j<s.length;j++) v.setUint8(o+j, s.charCodeAt(j)); };
-  txt(0,'RIFF');  v.setUint32(4, 36+bytes, true); txt(8,'WAVE');
-  txt(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true);
-  v.setUint16(22,1,true); v.setUint32(24,sr,true); v.setUint32(28,sr*2,true);
-  v.setUint16(32,2,true); v.setUint16(34,16,true);
-  txt(36,'data'); v.setUint32(40,bytes,true);
-  new Int16Array(buf,44).set(muestras);
-  return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
+function tono(t0, freq, dur, vol){
+  if(!actx) return;
+  const o = actx.createOscillator(), g = actx.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(freq, t0);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.014);
+  g.gain.setValueAtTime(vol, t0 + Math.max(dur - 0.07, 0.02));
+  g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+  o.connect(g); g.connect(actx.destination);
+  o.start(t0);
+  o.stop(t0 + dur + 0.06);
+  agendados.push(o);
 }
 
-const beepEl = document.createElement('audio');
-beepEl.preload = 'auto';
-beepEl.setAttribute('playsinline','');
-try{ beepEl.src = crearWav(); }catch(err){}
-document.body.appendChild(beepEl);
+function cancelarAudio(){
+  agendados.forEach(n=>{ try{ n.stop(0); }catch(err){} try{ n.disconnect(); }catch(err){} });
+  agendados = [];
+}
 
-let desbloqueado = false;
-
-/* Se llama desde el toque en el timer: iOS solo autoriza el audio ahí. */
-function desbloquearAudio(){
-  sesionDeAudio();
-  if(!desbloqueado){
-    beepEl.volume = 0;
-    const p = beepEl.play();
-    if(p && p.then){
-      p.then(()=>{
-        beepEl.pause(); beepEl.currentTime = 0; beepEl.volume = 1;
-        desbloqueado = true;
-      }).catch(()=>{ beepEl.volume = 1; });
-    }
+/* Agenda los avisos de un timer de `segundos` que arranca ahora. */
+function agendarCuenta(segundos){
+  if(!actx || segundos < 1) return;
+  const base = actx.currentTime + 0.06;
+  const desde = Math.min(5, segundos - 1);
+  for(let s = desde; s >= 1; s--){
+    if(segundos - s < 0) continue;                  // nunca en tiempo negativo
+    tono(base + (segundos - s), 880, 0.13, 0.30);   // pip corto
   }
-  try{
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    if(actx.state === 'suspended') actx.resume();
-    const src = actx.createBufferSource();
-    src.buffer = actx.createBuffer(1,1,22050);
-    src.connect(actx.destination);
-    src.start(0);
-  }catch(err){}
+  tono(base + segundos, 1245, 0.95, 0.42);          // tono largo final
 }
 
-/* Respaldo sintetizado, por si el WAV no se pudo crear. */
-function pipSintetizado(){
-  try{
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    if(actx.state === 'suspended') actx.resume();
-    [880, 880, 1175].forEach((f,i)=>{
-      const o = actx.createOscillator(), g = actx.createGain();
-      o.type='sine'; o.frequency.value=f;
-      const t = actx.currentTime + i*0.23;
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(0.4, t+0.015);
-      g.gain.exponentialRampToValueAtTime(0.0008, t + (i===2?0.4:0.18));
-      o.connect(g); g.connect(actx.destination);
-      o.start(t); o.stop(t + 0.45);
-    });
-  }catch(err){}
+/* Secuencia comprimida para el botón de prueba. */
+function demoSonido(){
+  if(!actx) return;
+  const base = actx.currentTime + 0.08;
+  for(let i = 0; i < 5; i++) tono(base + i*0.55, 880, 0.13, 0.30);
+  tono(base + 5*0.55, 1245, 0.95, 0.42);
 }
 
-/* Aviso visual: se ve aunque el teléfono esté en silencio. */
-const flashEl = document.createElement('div');
-flashEl.className = 'flash';
-flashEl.textContent = '¡Tiempo!';
-document.body.appendChild(flashEl);
-function avisoVisual(){
-  flashEl.classList.add('on');
-  setTimeout(()=>flashEl.classList.remove('on'), 1400);
+
+/* ============================================================
+   Temporizador a pantalla completa (una fase o una secuencia)
+
+   `elapsed` — los segundos corridos desde el inicio de la secuencia — es la
+   única fuente de verdad. La pantalla y el sonido se derivan de ahí, así que
+   pausar, saltar o reiniciar es solo mover ese número y reprogramar.
+   ============================================================ */
+
+const tfs = document.createElement('div');
+tfs.className = 'tfs';
+tfs.setAttribute('aria-hidden','true');
+tfs.innerHTML = `
+  <div class="tfs-global"><i></i></div>
+  <div class="tfs-top">
+    <span class="tfs-label"></span>
+    <button class="tfs-exit" type="button" aria-label="Salir del temporizador">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="tfs-mid">
+    <div class="tfs-phase"></div>
+    <div class="tfs-clock" role="timer" aria-live="off">0:00</div>
+    <div class="tfs-bar"><i></i></div>
+    <div class="tfs-meta"></div>
+    <div class="tfs-next"></div>
+  </div>
+  <div class="tfs-ctrl">
+    <button class="tfs-btn tfs-prev" type="button" aria-label="Fase anterior">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14L7 12zM5 5v14"/></svg>
+    </button>
+    <button class="tfs-btn primary tfs-toggle" type="button">Pausar</button>
+    <button class="tfs-btn tfs-skip" type="button" aria-label="Fase siguiente">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14l11-7zM19 5v14"/></svg>
+    </button>
+  </div>
+  <button class="tfs-reset" type="button">Reiniciar desde el principio</button>`;
+document.body.appendChild(tfs);
+
+const $tfs = s => tfs.querySelector(s);
+const tfsClock = $tfs('.tfs-clock'), tfsLabel = $tfs('.tfs-label'),
+      tfsPhase = $tfs('.tfs-phase'), tfsMeta  = $tfs('.tfs-meta'),
+      tfsNext  = $tfs('.tfs-next'),  tfsBar   = $tfs('.tfs-bar i'),
+      tfsGlobal= $tfs('.tfs-global i'),
+      tfsToggle= $tfs('.tfs-toggle'), tfsPrev = $tfs('.tfs-prev'),
+      tfsSkip  = $tfs('.tfs-skip'),   tfsReset= $tfs('.tfs-reset');
+
+const SEQ = {
+  fases:[], acum:[], total:0, titulo:'', unica:false,
+  base:0, t0:0, pausado:false, fin:false,
+  idVista:null, idAudio:null,
+  eventos:[], evIdx:0, audioBase:0
+};
+
+/* ---------- sonidos por fase ---------- */
+function sonar(kind, at){
+  if(!actx) return;
+  if(kind === 'pip')      return tono(at, 880, 0.13, 0.30);
+  if(kind === 'trabajo'){                       // tres pitidos que suben
+    tono(at,        700, 0.10, 0.30);
+    tono(at + 0.16, 900, 0.10, 0.32);
+    tono(at + 0.32, 1175, 0.16, 0.34);
+    return;
+  }
+  if(kind === 'descanso') return tono(at, 420, 0.45, 0.30);
+  if(kind === 'final'){                         // cierre más largo
+    tono(at, 1245, 0.95, 0.42);
+    tono(at + 0.30, 830, 0.70, 0.26);
+    return;
+  }
 }
 
-function pip(){
-  avisoVisual();
-  let sono = false;
-  try{
-    beepEl.currentTime = 0;
-    const p = beepEl.play();
-    if(p && p.then){
-      p.then(()=>{ sono = true; }).catch(()=>pipSintetizado());
-    } else { sono = true; }
-  }catch(err){ pipSintetizado(); }
-  // si el WAV no arrancó en medio segundo, intenta el oscilador
-  setTimeout(()=>{ if(!sono && beepEl.paused) pipSintetizado(); }, 500);
+/* ---------- lectura del estado a partir de elapsed ---------- */
+function elapsedSeq(){
+  return SEQ.pausado || SEQ.fin ? SEQ.base : SEQ.base + (Date.now()-SEQ.t0)/1000;
 }
 
-const timers = new Map();
-
-function resetTimer(btn){
-  const st = timers.get(btn);
-  if(st) clearInterval(st.id);
-  timers.delete(btn);
-  if(!timers.size) letSleep();
-  btn.classList.remove('on','warn');
-  btn.querySelector('.tclock').textContent = fmt(+btn.dataset.init);
+function faseEn(e){
+  for(let k=0; k<SEQ.fases.length; k++){
+    if(e < SEQ.acum[k]) return {k, left: Math.max(0, Math.ceil(SEQ.acum[k]-e-0.001))};
+  }
+  return {k: SEQ.fases.length-1, left:0, fin:true};
 }
 
+function inicioDe(k){ return k ? SEQ.acum[k-1] : 0; }
+
+/* ---------- eventos de audio desde un punto dado ---------- */
+function eventosDesde(desde){
+  const ev = [];
+  SEQ.fases.forEach((f,k)=>{
+    const ini = inicioDe(k), fin = SEQ.acum[k];
+    if(fin <= desde) return;
+    if(ini >= desde && f.tipo !== 'prep'){
+      ev.push({at: ini, kind: f.tipo === 'trabajo' ? 'trabajo' : 'descanso'});
+    }
+    for(let s = Math.min(5, f.secs-1); s >= 1; s--){
+      const at = fin - s;
+      if(at > desde) ev.push({at, kind:'pip'});
+    }
+    if(k === SEQ.fases.length-1) ev.push({at: fin, kind:'final'});
+  });
+  return ev.map(e=>({at: e.at - desde, kind: e.kind})).sort((a,b)=>a.at-b.at);
+}
+
+/* Programa solo lo que viene en el próximo segundo y medio, no toda la
+   secuencia: un circuito de media hora tendría cientos de sonidos. */
+function despachaAudio(){
+  if(!actx) return;
+  const ahora = actx.currentTime - SEQ.audioBase;
+  while(SEQ.evIdx < SEQ.eventos.length && SEQ.eventos[SEQ.evIdx].at <= ahora + 1.2){
+    const e = SEQ.eventos[SEQ.evIdx++];
+    if(e.at >= ahora - 0.3) sonar(e.kind, SEQ.audioBase + e.at);
+  }
+}
+
+/* ---------- pintado ---------- */
+const NOMBRE_FASE = Object.assign({trabajo:''}, NOMBRE_FASE_CORTO);
+
+function pintaSeq(){
+  const e = elapsedSeq();
+  const st = faseEn(e);
+  const f = SEQ.fases[st.k];
+  const reposo = f.tipo !== 'trabajo';
+
+  tfs.classList.toggle('alerta', st.left <= 5);
+  tfs.classList.toggle('reposo', reposo && st.left > 5);
+
+  tfsClock.textContent = fmt(st.left);
+  tfsBar.style.width = (f.secs ? st.left/f.secs*100 : 0) + '%';
+  tfsGlobal.style.width = (SEQ.total ? Math.min(e,SEQ.total)/SEQ.total*100 : 0) + '%';
+
+  if(st.fin){
+    tfsPhase.textContent = '¡Terminaste!';
+    tfsMeta.textContent = SEQ.unica ? '' : SEQ.titulo;
+    tfsNext.textContent = '';
+    tfsToggle.hidden = true;
+    return;
+  }
+
+  tfsPhase.textContent = f.tipo === 'trabajo' ? f.nombre : NOMBRE_FASE[f.tipo];
+
+  const partes = [];
+  if(f.series > 1)  partes.push(`Serie ${f.serie} de ${f.series}`);
+  if(f.total > 1)   partes.push(`Ejercicio ${f.idx} de ${f.total}`);
+  tfsMeta.textContent = partes.join(' · ');
+
+  tfsNext.textContent = f.sigue ? 'Sigue: ' + f.sigue : '';
+  tfsToggle.hidden = false;
+}
+
+/* ---------- arranque, pausa, salto ---------- */
+function arrancarSeq(desde){
+  SEQ.base = Math.max(0, Math.min(desde, SEQ.total));
+  SEQ.t0 = Date.now();
+  SEQ.pausado = false;
+  SEQ.fin = false;
+
+  abrirAudio();
+  cancelarAudio();
+  SEQ.eventos = eventosDesde(SEQ.base);
+  SEQ.evIdx = 0;
+  SEQ.audioBase = actx ? actx.currentTime + 0.12 : 0;
+
+  clearInterval(SEQ.idVista); clearInterval(SEQ.idAudio);
+  SEQ.idVista = setInterval(latidoSeq, 200);
+  SEQ.idAudio = setInterval(despachaAudio, 150);
+  despachaAudio();
+
+  tfsToggle.textContent = 'Pausar';
+  keepAwake();
+  pintaSeq();
+}
+
+function latidoSeq(){
+  if(SEQ.pausado || SEQ.fin) return;
+  if(elapsedSeq() >= SEQ.total) return terminarSeq();
+  pintaSeq();
+}
+
+function pausarSeq(){
+  SEQ.base = elapsedSeq();
+  SEQ.pausado = true;
+  clearInterval(SEQ.idVista); clearInterval(SEQ.idAudio);
+  cancelarAudio();                      // los pitidos agendados ya no sirven
+  tfsToggle.textContent = 'Reanudar';
+  tfsPhase.textContent = 'En pausa';
+  letSleep();
+  pintaSeq();
+  tfsPhase.textContent = 'En pausa';
+}
+
+function terminarSeq(){
+  SEQ.base = SEQ.total;
+  SEQ.fin = true;
+  clearInterval(SEQ.idVista); clearInterval(SEQ.idAudio);
+  letSleep();
+  pintaSeq();
+}
+
+/* Salta al comienzo de la fase siguiente o de la anterior. */
+function saltarSeq(dir){
+  const st = faseEn(elapsedSeq());
+  let k = st.k + (dir > 0 ? 1 : -1);
+  if(dir < 0 && elapsedSeq() - inicioDe(st.k) > 2) k = st.k;   // primero reinicia la fase
+  k = Math.max(0, Math.min(k, SEQ.fases.length-1));
+  const pausado = SEQ.pausado;
+  SEQ.fin = false;
+  if(pausado){
+    SEQ.base = inicioDe(k);
+    pintaSeq();
+  } else {
+    arrancarSeq(inicioDe(k));
+  }
+}
+
+/* ---------- abrir y cerrar ---------- */
+function abrirSeq(fases, titulo, color, unica){
+  SEQ.fases = fases;
+  SEQ.acum = [];
+  let t = 0;
+  fases.forEach(f=>{ t += f.secs; SEQ.acum.push(t); });
+  SEQ.total = t;
+  SEQ.titulo = titulo || '';
+  SEQ.unica = !!unica;
+
+  tfs.style.setProperty('--tcolor', color || '#6E4BB8');
+  tfsLabel.textContent = titulo || 'Temporizador';
+  tfsPrev.hidden = unica;
+  tfsSkip.hidden = unica;
+  tfsReset.hidden = unica;
+  tfs.classList.toggle('simple', !!unica);
+
+  tfs.classList.add('on');
+  tfs.setAttribute('aria-hidden','false');
+  document.body.classList.add('locked');
+
+  arrancarSeq(0);
+}
+
+function cerrarSeq(){
+  clearInterval(SEQ.idVista); clearInterval(SEQ.idAudio);
+  SEQ.idVista = SEQ.idAudio = null;
+  cancelarAudio();
+  tfs.classList.remove('on','alerta','reposo');
+  tfs.setAttribute('aria-hidden','true');
+  document.body.classList.remove('locked');
+  letSleep();
+}
+
+function colorDe(el){
+  const panel = el.closest('.day');
+  const c = panel ? getComputedStyle(panel).getPropertyValue('--accent').trim() : '';
+  return c || '#6E4BB8';
+}
+
+/* ---------- controles ---------- */
+$tfs('.tfs-exit').addEventListener('click', cerrarSeq);
+tfsToggle.addEventListener('click', ()=>{
+  SEQ.pausado ? arrancarSeq(SEQ.base) : pausarSeq();
+});
+tfsPrev.addEventListener('click', ()=>saltarSeq(-1));
+tfsSkip.addEventListener('click', ()=>saltarSeq(1));
+tfsReset.addEventListener('click', ()=>arrancarSeq(0));
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape' && tfs.classList.contains('on')) cerrarSeq();
+});
+
+/* Un botón de tiempo suelto: una sola fase, sin prepárate. */
 document.addEventListener('click', e=>{
   const btn = e.target.closest('.timer');
-  if(!btn) return;
+  if(btn){
+    const et = btn.querySelector('.tlabel');
+    const nombre = et ? et.textContent : 'Temporizador';
+    const esDescanso = /descanso|pausa/i.test(nombre);
+    abrirSeq(
+      [{tipo: esDescanso ? 'descanso' : 'trabajo', secs:+btn.dataset.init, nombre}],
+      nombre, colorDe(btn), true
+    );
+    return;
+  }
+  const auto = e.target.closest('.auto');
+  if(auto){
+    const plan = PLANES[+auto.dataset.plan];
+    if(plan) abrirSeq(plan.fases.map(f=>Object.assign({},f)), plan.titulo, colorDe(auto), false);
+  }
+});
 
-  if(timers.has(btn)){ resetTimer(btn); return; }
-
-  // un solo timer activo a la vez
-  [...timers.keys()].forEach(resetTimer);
-
-  const total = +btn.dataset.init;
-  let left = total;
-  const clock = btn.querySelector('.tclock');
-
-  btn.classList.add('on');
-  clock.textContent = fmt(left);
-  keepAwake();
-
-  // iOS solo autoriza el sonido dentro de un toque, así que se desbloquea aquí
-  desbloquearAudio();
-
-  const id = setInterval(()=>{
-    left--;
-    if(left <= 5 && left > 0) btn.classList.add('warn');
-    clock.textContent = fmt(Math.max(left,0));
-    if(left <= 0){
-      clearInterval(id);
-      timers.delete(btn);
-      if(!timers.size) letSleep();
-      btn.classList.remove('on','warn');
-      btn.classList.add('done');
-      clock.textContent = '0:00';
-      pip();
-      setTimeout(()=>{
-        btn.classList.remove('done');
-        clock.textContent = fmt(total);
-      }, 1800);
-    }
-  }, 1000);
-
-  timers.set(btn, {id});
+/* iOS suspende el audio al salir de la app: al volver se reprograma solo. */
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState !== 'visible') return;
+  if(!tfs.classList.contains('on') || SEQ.pausado || SEQ.fin) return;
+  arrancarSeq(elapsedSeq());
 });
 
 /* ============================================================
@@ -1296,7 +1991,7 @@ function letSleep(){
   if(wakeLock){ try{ wakeLock.release(); }catch(err){} wakeLock = null; }
 }
 document.addEventListener('visibilitychange', ()=>{
-  if(document.visibilityState === 'visible' && timers.size) keepAwake();
+  if(document.visibilityState === 'visible' && SEQ.idVista) keepAwake();
 });
 
 /* ============================================================
@@ -1338,9 +2033,15 @@ function importLog(file){
 const testBtn = document.getElementById('testSound');
 const tip = document.getElementById('soundTip');
 testBtn.addEventListener('click', ()=>{
-  desbloquearAudio();
-  setTimeout(pip, 180);
-  tip.textContent = '¿No se oyó? En iPhone revisa el interruptor de silencio del lado izquierdo y sube el volumen con la app abierta.';
+  const ok = abrirAudio();
+  cancelarAudio();
+  demoSonido();
+  const sesion = ('audioSession' in navigator) ? 'sí' : 'no';
+  const estado = actx ? actx.state : 'no disponible';
+  tip.innerHTML = ok
+    ? 'Deberías oír cinco pip y un tono largo. Si no suena, baja el interruptor de silencio del lado izquierdo del iPhone y sube el volumen con la app abierta.'
+      + `<br><span style="opacity:.7">audio: ${estado} · categoría playback: ${sesion}</span>`
+    : 'Este navegador no deja usar audio. El aviso rojo de pantalla completa sí va a funcionar.';
 });
 
 if('serviceWorker' in navigator){
