@@ -288,9 +288,22 @@
     background:#fff;border:1px dashed var(--rule);border-radius:var(--radius);
     padding:22px;text-align:center;color:var(--ink-faint);font-size:14px;
   }
+  .sound-tip{font-size:12.5px;color:var(--ink-faint);max-width:44ch;line-height:1.45}
   .store-note{
     margin-top:20px;font-size:12.5px;color:var(--ink-faint);max-width:66ch;line-height:1.5;
   }
+
+  /* ---------- aviso visual de fin de timer ---------- */
+  .flash{
+    position:fixed;inset:0;z-index:90;
+    display:none;place-items:center;
+    background:#D02B4EF2;color:#fff;
+    font-family:'Archivo Narrow','Archivo',sans-serif;
+    font-size:clamp(44px,13vw,90px);font-weight:700;letter-spacing:-.02em;
+    pointer-events:none;
+  }
+  .flash.on{display:grid;animation:flashIn .28s ease-out}
+  @keyframes flashIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
 
   footer{
     margin-top:46px;padding-top:18px;border-top:1px solid var(--rule);
@@ -305,6 +318,10 @@
 <header class="top">
   <h1>Guía de entrenamiento semanal</h1>
   <div class="load-note">Los pesos son los del plan original (mancuernas de 5 lb, banda fuerte). Ajústalos según cómo te sientas y pregúntale a Valeria si algo no te cuadra.</div>
+  <div class="day-actions">
+    <button class="btn ghost" type="button" id="testSound">Probar el sonido del timer</button>
+    <span class="sound-tip" id="soundTip"></span>
+  </div>
 </header>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Días de entrenamiento"></nav>
@@ -1096,12 +1113,84 @@ function updateProgress(panel){
    ============================================================ */
 
 let actx = null;
-function pip(){
+
+/* En iOS, el audio que genera una página va por el canal "ambiente", que el
+   interruptor de silencio apaga. Pedir la categoría 'playback' (Safari 16.4+)
+   lo saca de ahí y suena aunque el teléfono esté en silencio. */
+function sesionDeAudio(){
+  try{ if(navigator.audioSession) navigator.audioSession.type = 'playback'; }catch(err){}
+}
+
+/* Un WAV de verdad suena mucho mejor que un oscilador en iOS, porque se puede
+   reproducir 30 segundos después del toque que lo autorizó. Se genera al cargar. */
+function crearWav(){
+  const sr = 44100;
+  const notas = [[880,0.13],[0,0.08],[880,0.13],[0,0.08],[1175,0.34]];
+  let largo = 0;
+  notas.forEach(n => largo += Math.round(n[1]*sr));
+  const muestras = new Int16Array(largo);
+  let i = 0;
+  notas.forEach(([f,dur])=>{
+    const n = Math.round(dur*sr);
+    for(let s=0; s<n; s++, i++){
+      if(!f){ muestras[i] = 0; continue; }
+      const t = s/sr, atk = 0.006, rel = 0.05;
+      let env = 1;
+      if(t < atk) env = t/atk;
+      else if(t > dur-rel) env = Math.max(0,(dur-t)/rel);
+      muestras[i] = Math.round(Math.sin(2*Math.PI*f*t) * 0.7 * env * 32767);
+    }
+  });
+  const bytes = muestras.length*2;
+  const buf = new ArrayBuffer(44+bytes);
+  const v = new DataView(buf);
+  const txt = (o,s)=>{ for(let j=0;j<s.length;j++) v.setUint8(o+j, s.charCodeAt(j)); };
+  txt(0,'RIFF');  v.setUint32(4, 36+bytes, true); txt(8,'WAVE');
+  txt(12,'fmt '); v.setUint32(16,16,true); v.setUint16(20,1,true);
+  v.setUint16(22,1,true); v.setUint32(24,sr,true); v.setUint32(28,sr*2,true);
+  v.setUint16(32,2,true); v.setUint16(34,16,true);
+  txt(36,'data'); v.setUint32(40,bytes,true);
+  new Int16Array(buf,44).set(muestras);
+  return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
+}
+
+const beepEl = document.createElement('audio');
+beepEl.preload = 'auto';
+beepEl.setAttribute('playsinline','');
+try{ beepEl.src = crearWav(); }catch(err){}
+document.body.appendChild(beepEl);
+
+let desbloqueado = false;
+
+/* Se llama desde el toque en el timer: iOS solo autoriza el audio ahí. */
+function desbloquearAudio(){
+  sesionDeAudio();
+  if(!desbloqueado){
+    beepEl.volume = 0;
+    const p = beepEl.play();
+    if(p && p.then){
+      p.then(()=>{
+        beepEl.pause(); beepEl.currentTime = 0; beepEl.volume = 1;
+        desbloqueado = true;
+      }).catch(()=>{ beepEl.volume = 1; });
+    }
+  }
   try{
     actx = actx || new (window.AudioContext || window.webkitAudioContext)();
     if(actx.state === 'suspended') actx.resume();
-    const notes = [880, 880, 1175];
-    notes.forEach((f,i)=>{
+    const src = actx.createBufferSource();
+    src.buffer = actx.createBuffer(1,1,22050);
+    src.connect(actx.destination);
+    src.start(0);
+  }catch(err){}
+}
+
+/* Respaldo sintetizado, por si el WAV no se pudo crear. */
+function pipSintetizado(){
+  try{
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if(actx.state === 'suspended') actx.resume();
+    [880, 880, 1175].forEach((f,i)=>{
       const o = actx.createOscillator(), g = actx.createGain();
       o.type='sine'; o.frequency.value=f;
       const t = actx.currentTime + i*0.23;
@@ -1111,7 +1200,31 @@ function pip(){
       o.connect(g); g.connect(actx.destination);
       o.start(t); o.stop(t + 0.45);
     });
-  }catch(err){ /* sin audio disponible */ }
+  }catch(err){}
+}
+
+/* Aviso visual: se ve aunque el teléfono esté en silencio. */
+const flashEl = document.createElement('div');
+flashEl.className = 'flash';
+flashEl.textContent = '¡Tiempo!';
+document.body.appendChild(flashEl);
+function avisoVisual(){
+  flashEl.classList.add('on');
+  setTimeout(()=>flashEl.classList.remove('on'), 1400);
+}
+
+function pip(){
+  avisoVisual();
+  let sono = false;
+  try{
+    beepEl.currentTime = 0;
+    const p = beepEl.play();
+    if(p && p.then){
+      p.then(()=>{ sono = true; }).catch(()=>pipSintetizado());
+    } else { sono = true; }
+  }catch(err){ pipSintetizado(); }
+  // si el WAV no arrancó en medio segundo, intenta el oscilador
+  setTimeout(()=>{ if(!sono && beepEl.paused) pipSintetizado(); }, 500);
 }
 
 const timers = new Map();
@@ -1142,11 +1255,8 @@ document.addEventListener('click', e=>{
   clock.textContent = fmt(left);
   keepAwake();
 
-  // desbloquea el audio con este gesto del usuario
-  try{
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    if(actx.state === 'suspended') actx.resume();
-  }catch(err){}
+  // iOS solo autoriza el sonido dentro de un toque, así que se desbloquea aquí
+  desbloquearAudio();
 
   const id = setInterval(()=>{
     left--;
@@ -1224,6 +1334,14 @@ function importLog(file){
 /* ============================================================
    Service worker (para que funcione sin conexión)
    ============================================================ */
+
+const testBtn = document.getElementById('testSound');
+const tip = document.getElementById('soundTip');
+testBtn.addEventListener('click', ()=>{
+  desbloquearAudio();
+  setTimeout(pip, 180);
+  tip.textContent = '¿No se oyó? En iPhone revisa el interruptor de silencio del lado izquierdo y sube el volumen con la app abierta.';
+});
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{

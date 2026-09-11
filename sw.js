@@ -2,7 +2,7 @@
    Sube la versión (v1 -> v2 -> ...) cada vez que cambies index.html,
    así el teléfono descarga la versión nueva en lugar de la guardada. */
 
-const VERSION   = 'entreno-v1';
+const VERSION   = 'entreno-v2';
 const SHELL     = VERSION + '-shell';
 const RUNTIME   = VERSION + '-runtime';
 
