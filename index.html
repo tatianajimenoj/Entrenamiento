@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entreno · Guía semanal</title>
+<meta name="description" content="Guía de entrenamiento semanal con videos, timers y registro de días entrenados.">
+<meta name="theme-color" content="#6E4BB8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Entreno">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1EFF7;
+    --card:#FFFFFF;
+    --ink:#221B33;
+    --ink-soft:#5C5573;
+    --ink-faint:#8B85A0;
+    --rule:#DCD6EA;
+    --alert:#D02B4E;
+    --accent:#6E4BB8;
+    --accent-wash:#6E4BB81a;
+    --radius:11px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Archivo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-size:16px;
+    line-height:1.55;
+  }
+  .wrap{max-width:950px;margin:0 auto;padding:0 20px 72px}
+
+  header.top{padding:46px 0 22px}
+  h1{
+    font-family:'Archivo Narrow','Archivo',sans-serif;
+    font-weight:700;
+    font-size:clamp(30px,6vw,46px);
+    line-height:1.05;
+    letter-spacing:-0.02em;
+    margin:0;
+    background:linear-gradient(96deg,#6E4BB8,#3D63BE 38%,#1F8399 62%,#2A8763);
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:#6E4BB8;
+  }
+  .load-note{
+    margin-top:20px;padding:13px 15px;
+    background:#FFF;border:1px solid var(--rule);border-radius:var(--radius);
+    font-size:13.5px;color:var(--ink-soft);max-width:72ch;
+  }
+
+  .tabs{
+    position:sticky;top:0;z-index:20;
+    display:flex;gap:5px;
+    padding:11px 0;
+    background:linear-gradient(var(--paper) 76%,transparent);
+    overflow-x:auto;scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    flex:0 0 auto;
+    appearance:none;border:1px solid var(--rule);background:#FFF;
+    color:var(--ink-soft);
+    font-family:inherit;font-size:14px;font-weight:600;
+    padding:9px 15px 8px;border-radius:9px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:flex-start;gap:1px;
+    transition:color .15s,border-color .15s,background .15s;
+  }
+  .tab small{font-weight:500;font-size:11.5px;color:var(--ink-faint)}
+  .tab:hover{border-color:var(--tabc);color:var(--tabc)}
+  .tab:hover small{color:var(--tabc)}
+  .tab[aria-selected="true"]{background:var(--tabc);border-color:var(--tabc);color:#fff}
+  .tab[aria-selected="true"] small{color:#ffffffc9}
+  .tab:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+  .day{display:none}
+  .day.on{display:block}
+  .day-head{
+    border-top:3px solid var(--accent);
+    padding:20px 0 18px;
+    display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;justify-content:space-between;
+  }
+  .day-head h2{
+    font-family:'Archivo Narrow','Archivo',sans-serif;
+    font-size:clamp(24px,4.6vw,34px);font-weight:700;letter-spacing:-0.015em;
+    margin:0;line-height:1.1;
+  }
+  .day-head .focus{color:var(--accent);font-weight:600;font-size:15px;margin-top:2px}
+  .progress{text-align:right;font-size:13px;color:var(--ink-soft);min-width:138px}
+  .bar{height:5px;background:var(--rule);border-radius:99px;margin-top:6px;overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .25s}
+
+  .block{margin:26px 0 0}
+  .block-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  .block-head h3{font-size:17px;font-weight:700;margin:0;letter-spacing:-0.01em}
+  .block-head .meta{font-size:13px;color:var(--ink-faint)}
+
+  .pair{border-left:3px solid var(--accent);padding-left:13px;margin:10px 0}
+  .pair-note{font-size:12.5px;color:var(--accent);font-weight:600;margin:0 0 7px}
+
+  .ex{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:var(--radius);
+    margin-bottom:7px;overflow:hidden;
+  }
+  .ex.open{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .ex-head{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px}
+  .ex-toggle{
+    flex:1 1 auto;min-width:0;
+    display:flex;align-items:center;gap:12px;
+    background:none;border:0;padding:0;text-align:left;
+    font-family:inherit;font-size:inherit;color:inherit;cursor:pointer;
+  }
+  .ex-toggle:focus-visible,.tick:focus-visible,.timer:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .tick{
+    flex:0 0 auto;width:22px;height:22px;border-radius:7px;
+    border:1.5px solid var(--rule);background:#fff;
+    display:grid;place-items:center;cursor:pointer;padding:0;
+  }
+  .tick svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+  .tick[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+  .tick[aria-pressed="true"] svg{opacity:1}
+  .ex-title{flex:1 1 auto;min-width:0}
+  .code{font-family:'Archivo Narrow','Archivo',sans-serif;font-weight:700;color:var(--accent);font-size:13px;margin-right:7px}
+  .name{font-weight:600;font-size:15.5px;letter-spacing:-0.005em}
+  .es{display:block;font-size:13px;color:var(--ink-faint);margin-top:1px}
+  .ex.done .name,.ex.done .es{text-decoration:line-through;color:var(--ink-faint)}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  .chip{
+    font-size:11.5px;font-weight:600;color:var(--ink-soft);
+    background:var(--paper);border:1px solid var(--rule);
+    padding:2px 7px;border-radius:6px;white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+  }
+  .chip.rest{color:var(--accent);border-color:transparent;background:var(--accent-wash)}
+  .caret{flex:0 0 auto;width:16px;height:16px;stroke:var(--ink-faint);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+  .ex.open .caret{transform:rotate(180deg)}
+
+  .ex-body{display:none;border-top:1px solid var(--rule);padding:16px 14px}
+  .ex.open .ex-body{display:grid;grid-template-columns:236px 1fr;gap:18px}
+  @media(max-width:640px){.ex.open .ex-body{grid-template-columns:1fr}}
+
+  .preview{
+    display:block;position:relative;
+    border-radius:9px;overflow:hidden;
+    background:#1A1526;border:1px solid var(--rule);
+    aspect-ratio:16/9;text-decoration:none;
+  }
+  .preview img{width:100%;height:100%;object-fit:cover;display:block}
+  .preview .play{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(180deg,#0000 42%,#1a1526a6)}
+  .preview .play span{
+    width:46px;height:46px;border-radius:50%;background:#fffffff0;
+    display:grid;place-items:center;transition:transform .15s,background .15s;
+  }
+  .preview .play svg{width:16px;height:16px;fill:#221B33;margin-left:2px}
+  .preview:hover .play span{background:#fff;transform:scale(1.07)}
+  .vlink{
+    display:inline-block;margin-top:7px;
+    font-size:12.5px;font-weight:600;color:var(--accent);text-decoration:none;
+    border-bottom:1px solid currentColor;
+  }
+  .vlink:hover{color:var(--ink)}
+
+  .how h4{font-size:12.5px;font-weight:700;margin:0 0 5px;color:var(--ink-faint)}
+  .how p{margin:0 0 12px;font-size:14.5px;line-height:1.6;max-width:62ch}
+  .spec{
+    list-style:none;margin:0;padding:11px 0 0;border-top:1px solid var(--rule);
+    display:flex;flex-wrap:wrap;gap:4px 22px;font-size:13.5px;
+  }
+  .spec li{color:var(--ink-soft)}
+  .spec b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+
+  /* ---------- timers ---------- */
+  .timers{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .timer{
+    appearance:none;cursor:pointer;
+    display:flex;align-items:center;gap:9px;
+    font-family:inherit;
+    background:#fff;border:1.5px solid var(--accent);color:var(--accent);
+    padding:6px 11px 6px 10px;border-radius:9px;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .timer .tlabel{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .timer .tclock{
+    font-variant-numeric:tabular-nums;
+    font-size:16px;font-weight:700;letter-spacing:-.01em;
+    min-width:42px;text-align:right;
+  }
+  .timer:hover{background:var(--accent-wash)}
+  .timer.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .timer.warn{background:var(--alert);border-color:var(--alert);color:#fff;animation:tick 1s steps(1) infinite}
+  .timer.done{background:#2A8763;border-color:#2A8763;color:#fff}
+  @keyframes tick{50%{opacity:.55}}
+
+  .circuit{margin:14px 0 0;padding:0;list-style:none;grid-column:1/-1}
+  .circuit > li{border-top:1px solid var(--rule);padding:13px 0 0;margin-top:13px}
+  .circuit > li:first-child{border-top:0;margin-top:0;padding-top:0}
+  .cgrid{display:grid;grid-template-columns:158px 1fr;gap:15px;align-items:start}
+  @media(max-width:640px){.cgrid{grid-template-columns:1fr}}
+  .cgrid .nm{font-weight:600;font-size:14.5px;margin:0 0 3px}
+  .cgrid p{margin:0;font-size:13.8px;line-height:1.55;color:var(--ink-soft);max-width:60ch}
+  .cgrid .timers{margin-top:9px}
+
+  /* ---------- completar día ---------- */
+  .day-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px}
+  .btn{
+    appearance:none;cursor:pointer;font-family:inherit;
+    font-size:13.5px;font-weight:600;
+    padding:8px 14px;border-radius:9px;
+    border:1.5px solid var(--accent);background:var(--accent);color:#fff;
+    transition:background .15s,color .15s,opacity .15s;
+  }
+  .btn:hover{opacity:.88}
+  .btn.ghost{background:#fff;color:var(--accent)}
+  .btn.ghost:hover{background:var(--accent-wash);opacity:1}
+  .btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+  .saved{
+    display:none;align-items:center;gap:6px;
+    font-size:13px;font-weight:600;color:#2A8763;
+  }
+  .saved svg{width:15px;height:15px;stroke:#2A8763;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .day.logged .saved{display:flex}
+  .day.logged .btn-log{display:none}
+
+  /* ---------- registro ---------- */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:9px;margin:20px 0 24px}
+  .stat{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);padding:13px 15px}
+  .stat b{
+    display:block;font-family:'Archivo Narrow','Archivo',sans-serif;
+    font-size:30px;font-weight:700;line-height:1.05;letter-spacing:-.02em;color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .stat span{font-size:12.5px;color:var(--ink-faint);font-weight:500}
+  .cal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+  .cal-head h3{margin:0;font-size:17px;font-weight:700;text-transform:capitalize}
+  .nav{display:flex;gap:5px}
+  .nav button{
+    appearance:none;cursor:pointer;width:32px;height:32px;border-radius:8px;
+    border:1px solid var(--rule);background:#fff;color:var(--ink-soft);
+    display:grid;place-items:center;font-family:inherit;
+  }
+  .nav button:hover{border-color:var(--ink-faint);color:var(--ink)}
+  .nav svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .cal{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);padding:14px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .dow{
+    text-align:center;font-size:11px;font-weight:600;color:var(--ink-faint);
+    padding-bottom:5px;
+  }
+  .cell{
+    aspect-ratio:1;border-radius:8px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    font-size:12.5px;color:var(--ink-soft);font-variant-numeric:tabular-nums;
+    border:1px solid transparent;
+  }
+  .cell.pad{visibility:hidden}
+  .cell.today{border-color:var(--ink-faint);font-weight:700;color:var(--ink)}
+  .cell.hit{color:#fff;font-weight:700}
+  .cell i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.85}
+  .cell.hit i{background:#fff}
+  .sessions{list-style:none;margin:24px 0 0;padding:0}
+  .sessions li{
+    display:flex;align-items:center;gap:12px;
+    background:#fff;border:1px solid var(--rule);border-radius:var(--radius);
+    padding:11px 13px;margin-bottom:7px;
+  }
+  .dot{flex:0 0 auto;width:10px;height:10px;border-radius:50%}
+  .sess-main{flex:1 1 auto;min-width:0}
+  .sess-main b{display:block;font-size:14.5px;font-weight:600}
+  .sess-main span{font-size:12.5px;color:var(--ink-faint)}
+  .del{
+    appearance:none;cursor:pointer;border:0;background:none;padding:5px;border-radius:7px;
+    color:var(--ink-faint);line-height:0;
+  }
+  .del:hover{color:var(--alert);background:#D02B4E14}
+  .del svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round}
+  .empty{
+    background:#fff;border:1px dashed var(--rule);border-radius:var(--radius);
+    padding:22px;text-align:center;color:var(--ink-faint);font-size:14px;
+  }
+  .store-note{
+    margin-top:20px;font-size:12.5px;color:var(--ink-faint);max-width:66ch;line-height:1.5;
+  }
+
+  footer{
+    margin-top:46px;padding-top:18px;border-top:1px solid var(--rule);
+    font-size:13px;color:var(--ink-faint);max-width:72ch;
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Guía de entrenamiento semanal</h1>
+  <div class="load-note">Los pesos son los del plan original (mancuernas de 5 lb, banda fuerte). Ajústalos según cómo te sientas y pregúntale a Valeria si algo no te cuadra.</div>
+</header>
+
+<nav class="tabs" id="tabs" role="tablist" aria-label="Días de entrenamiento"></nav>
+<main id="days"></main>
+
+<footer>
+  Los videos son de terceros y se abren en YouTube. Si un ejercicio no te queda claro, escríbele a tu coach antes de cargar peso.
+</footer>
+</div>
+
+<script>
+/* ============================================================
+   Videos de referencia (YouTube)
+   ============================================================ */
+const V = {
+  hipflexor : 'Bfb-9dIWEr4',
+  deepsquat : '0wzrgyAurT8',
+  fiveway   : 'R0AGG2UCJJY',
+  shinbox   : 'FzJf7dmtukY',
+  hipcircle : 'Q-oOYQipCg8',
+  armcircle : 'hne3nHGXPRM',
+  skipping  : 'RnqRhSZ8MtE',
+  kneelsquat: '0z0NEUtwxF0',
+  wallsit   : 'sT0jUNnb9dk',
+  boxsquat  : 'wL9FSf7ZENU',
+  kbbridge  : 'Yao9ShODVZA',
+  sumo      : 'wpOQEuaeRDU',
+  bandbridge: 'GYUTwEqwdXI',
+  hipthrust : '29OfN4ztW_g',
+  seatedabd : 'DU6W5rVb7zA',
+  rdl       : 'KYIJdN2gBmQ',
+  row       : 'fFmwY2dA2ds',
+  latraise  : 'FmouSdWmFxw',
+  reardelt  : 'GyhFsjrn7dw',
+  press     : '1WOecdL8nrI',
+  onearmrow : 'fURsHPHgssI',
+  frontraise: 'BYnam1bnp18',
+  curl      : 'XE_pHwbst04',
+  ohtricep  : 'kYnFH6nw210',
+  seatedcurl: 's9GGVuUXgmY',
+  kickback  : 'liM-u9DMaZg',
+  hammer    : 'IaA2wknVAhg',
+  french    : 'ItLKDvhO8RU',
+  deadbug   : 'psOZS-sVDww',
+  catcow    : 'bKYGb1TgS6o',
+  birddog   : 'MEKThiUpdyc',
+  psoas     : 'vHIJgPO3p9Q',
+  quadplank : 'D7GqPOKuQCY',
+  pelvictilt: 'Q59R9p4rzxw',
+  straddle  : 'Czun8A9vRNk',
+  pike      : 'xYXWEONqBLU',
+  figure4   : '20oj5K0ee6k',
+  thomas    : 'LZIUUpvSwJg',
+  anterior  : 'oNz5L4wD20Q',
+  boxshldr  : 'NPK_CgUs3Pg',
+  cobra     : 'NjQzGzKO2Ao'
+};
+
+/* ============================================================
+   Bloques reutilizables
+   ============================================================ */
+
+const WARM_PIERNA = {
+  title:'Calentamiento', meta:'3 rondas en total',
+  items:[
+    {name:'Half Kneeling Hip Flexor Stretch', es:'Estiramiento del psoas en media rodilla',
+     video:V.hipflexor, spec:{tiempo:'0:30 por pierna'},
+     cues:'Ponte de rodillas con una pierna al frente formando 90°. Mete el coxis hacia abajo y aprieta el glúteo de la pierna de atrás: ahí sientes el estiramiento. Mantén el peso sobre la rodilla trasera y no arquees la espalda baja.'},
+    {name:'Deep Squat Hold', es:'Sentadilla profunda sostenida',
+     video:V.deepsquat, spec:{tiempo:'0:30'},
+     cues:'Baja en sentadilla lo más profundo que puedas y quédate ahí. Mete los codos por dentro de las rodillas y empújalas hacia fuera, pecho arriba y talones pegados al suelo. Si te vas de espaldas, sujétate de algo.'},
+    {name:'5 Way Hips', es:'Cadera en cinco direcciones',
+     video:V.fiveway, spec:{tiempo:'0:30'},
+     cues:'De pie apoyada en una pared, mueve una pierna en cinco direcciones: al frente, atrás, al lado, cruzada y en círculo. El tronco se queda quieto, solo trabaja la cadera.'},
+    {name:'Shinbox Switch', es:'Cambio de piernas sentada',
+     video:V.shinbox, spec:{tiempo:'0:30'},
+     cues:'Siéntate en el suelo con las dos rodillas dobladas hacia el mismo lado. Levanta las rodillas y gíralas al lado opuesto pasando por el centro. Intenta hacerlo sin apoyar las manos.'}
+  ]
+};
+
+const WARM_STD = {
+  title:'Calentamiento', meta:'3 rondas',
+  items:[
+    {name:'Standing Hip Circle', es:'Círculos de cadera de pie',
+     video:V.hipcircle, spec:{tiempo:'0:30'},
+     cues:'De pie con las manos en la cintura, dibuja círculos amplios con la pelvis, como si movieras un aro. Cambia de sentido a la mitad del tiempo.'},
+    {name:'Arm Circle', es:'Círculos de brazos',
+     video:V.armcircle, spec:{tiempo:'0:30'},
+     cues:'Brazos extendidos a los lados a la altura de los hombros. Empieza con círculos pequeños y ve agrandándolos. Mitad del tiempo hacia adelante, mitad hacia atrás.'},
+    {name:'Skipping', es:'Trote en el sitio con rodillas altas',
+     video:V.skipping, spec:{tiempo:'1:00'},
+     cues:'Trota en el sitio elevando las rodillas con un rebote ligero, acompañando con los brazos. Aterriza sobre la parte media del pie, no sobre el talón.'}
+  ]
+};
+
+const PISO_PELVICO_BASE = [
+  {name:'Deadbug', es:'Bicho muerto', video:V.deadbug,
+   cues:'Boca arriba, brazos hacia el techo y rodillas a 90°. Baja un brazo y la pierna contraria sin que la espalda baja se despegue del suelo. Vuelve y alterna.'},
+  {name:'Segmental Cat Cow', es:'Gato-camello por segmentos', video:V.catcow,
+   cues:'En cuatro apoyos, redondea y arquea la espalda vértebra por vértebra, empezando por la pelvis y subiendo. Lento, siguiendo la respiración.'},
+  {name:'Bird Dog', es:'Extensión cruzada en cuatro apoyos', video:V.birddog,
+   cues:'En cuatro apoyos, extiende un brazo y la pierna contraria hasta la línea del cuerpo. La cadera no se inclina ni gira; imagina que llevas un vaso de agua en la espalda baja.'},
+  {name:'Psoas March', es:'Marcha de psoas boca arriba', video:V.psoas,
+   cues:'Boca arriba con la pelvis en posición neutra y las rodillas a 90°. Baja una pierna hasta rozar el suelo con el talón y vuelve, alternando, sin que se mueva la pelvis.'},
+  {name:'Front Leaning Quadruped Plank', es:'Plancha en cuatro apoyos con las rodillas suspendidas', video:V.quadplank,
+   cues:'En cuatro apoyos con las puntas de los pies apoyadas, despega las rodillas apenas unos centímetros y lleva el peso ligeramente hacia las manos. Abdomen firme y espalda plana; aguanta ahí.'}
+];
+
+const PISO_PELVICO_EXTRA = {
+  name:'Supine Knees Bent Posterior Pelvic Tilt', es:'Retroversión de pelvis boca arriba', video:V.pelvictilt,
+  cues:'Boca arriba con las rodillas dobladas. Aplana la espalda baja contra el suelo llevando el pubis hacia el ombligo, sin empujar con los pies. Aguanta un par de segundos y suelta despacio.'
+};
+
+const WALK = {
+  name:'Walk', es:'Caminata', video:null,
+  spec:{tiempo:'1 hora a paso medio', 'cuándo':'a cualquier hora del día'},
+  cues:'Una hora caminando a ritmo medio, en el momento del día que mejor te acomode. El ritmo correcto es el que te deja hablar pero no cantar.'
+};
+
+const COOL_PIERNA = {
+  title:'Enfriamiento', meta:'estiramiento final',
+  items:[
+    {name:'Dynamic Straddle Stretch', es:'Estiramiento de aductores en V',
+     video:V.straddle, spec:{tiempo:'1:00'},
+     cues:'Sentada con las piernas abiertas en V, lleva el pecho hacia un lado, al centro y al otro lado con movimiento continuo. Rodillas y puntas de los pies mirando al techo, sin rebotes bruscos.'},
+    {name:'Seated Pike Stretch', es:'Estiramiento de isquiotibiales sentada',
+     video:V.pike, spec:{tiempo:'1:00'},
+     cues:'Sentada con las piernas juntas y estiradas, lleva el pecho hacia los muslos girando desde la cadera, no curvando la espalda. Rodillas sin bloquear.'},
+    {name:'Supine Figure Four Glute Stretch', es:'Estiramiento de glúteo en cuatro',
+     video:V.figure4, spec:{tiempo:'0:30'},
+     cues:'Boca arriba, cruza un tobillo sobre el muslo contrario formando un cuatro y acerca esa rodilla al pecho. Cambia de lado a la mitad del tiempo.'},
+    {name:'Thomas Stretch', es:'Estiramiento de Thomas',
+     video:V.thomas, spec:{tiempo:'0:30'},
+     cues:'Al borde de una cama o banco, abraza una rodilla al pecho y deja que la otra pierna cuelgue hacia el suelo. La espalda baja pegada a la superficie.'}
+  ]
+};
+
+const COOL_STD = {
+  title:'Enfriamiento', meta:'estiramiento final',
+  items:[
+    {name:'Anterior Pathway Stretch', es:'Estiramiento de pecho y hombro en la pared',
+     video:V.anterior, spec:{tiempo:'1:00'},
+     cues:'Apoya la mano en una pared con el pulgar hacia ella y el brazo estirado a la altura del hombro. Gira el cuerpo en dirección contraria hasta sentir el estiramiento en pecho y hombro, y vuelve. Cabeza alineada con los hombros.'},
+    {name:'Box Shoulder Stretch', es:'Estiramiento de hombros y dorsales con apoyo',
+     video:V.boxshldr, spec:{tiempo:'1:00'},
+     cues:'De rodillas frente a un banco o silla, apoya los codos en el borde y lleva la cadera hacia los talones dejando caer el pecho. Sientes el estiramiento en hombros y dorsales.'},
+    {name:'Cobra Stretch', es:'Postura de la cobra',
+     video:V.cobra, spec:{tiempo:'0:20'},
+     cues:'Boca abajo con las manos bajo los hombros, estira los brazos para levantar el pecho. Hombros lejos de las orejas, glúteos relajados y cuello largo.'}
+  ]
+};
+
+/* ============================================================
+   Días
+   ============================================================ */
+
+const DAYS = [
+  {
+    key:'lun', day:'Lunes', focus:'Pierna y cuádriceps', accent:'#6E4BB8',
+    blocks:[
+      WARM_PIERNA,
+      {title:'Entrenamiento', meta:'4 rondas por ejercicio · 1 min de descanso entre rondas', items:[
+        {code:'A', name:'Dumbbell Kneeling Squat', es:'Sentadilla de rodillas con mancuernas',
+         video:V.kneelsquat, spec:{rondas:'4', reps:'10', peso:'mancuernas 5 lb', descanso:'1 min'},
+         cues:'De rodillas en el suelo con una mancuerna en cada mano a los lados. Siéntate hacia atrás sobre los talones y vuelve a subir empujando con los glúteos. El tronco se mantiene alto y la espalda baja neutra.'},
+        {code:'B', name:'Wall Sit', es:'Sentadilla isométrica en la pared',
+         video:V.wallsit, spec:{rondas:'4', tiempo:'30 seg de isometría', descanso:'1 min'},
+         cues:'Espalda pegada a la pared, rodillas a 90° y pies al ancho de las caderas. Aguanta la posición con el peso en los talones y el abdomen activo. No apoyes las manos en los muslos.'},
+        {code:'C', name:'Dumbbell Box Squat', es:'Sentadilla al cajón con mancuernas',
+         video:V.boxsquat, spec:{rondas:'4', reps:'8-10', peso:'mancuernas 5 lb', descanso:'1 min'},
+         cues:'Con un banco o caja detrás, baja llevando la cadera hacia atrás hasta tocarlo suavemente y sube empujando el piso. La caja marca la profundidad, no es para sentarte a descansar.'},
+        {code:'D', name:'Kettlebell Glute Bridge', es:'Puente de glúteo con peso',
+         video:V.kbbridge, spec:{rondas:'4', reps:'20', peso:'5 lb (las dos mancuernas)', descanso:'1 min'},
+         cues:'Boca arriba con las rodillas dobladas y el peso apoyado sobre la cadera, sujetado con las manos. Sube la pelvis apretando los glúteos hasta alinear rodilla, cadera y hombro. Arriba no arquees la espalda: el empuje sale del glúteo.'},
+        {code:'E', name:'Dumbbell Sumo Squat', es:'Sentadilla sumo con mancuerna',
+         video:V.sumo, spec:{rondas:'4', reps:'12-15', peso:'mancuerna 5 lb', descanso:'1 min'},
+         cues:'Pies más anchos que los hombros con las puntas ligeramente hacia fuera y la mancuerna colgando entre las piernas. Baja manteniendo el pecho alto y empuja las rodillas hacia fuera, en línea con los pies.'},
+        {code:'F', name:'Banded Glute Bridge Hip Abduction', es:'Puente de glúteo con apertura de banda',
+         video:V.bandbridge, spec:{rondas:'4', reps:'15', material:'banda fuerte', descanso:'1 min'},
+         cues:'Banda por encima de las rodillas, en posición de puente con la cadera arriba. Abre las rodillas contra la banda y ciérralas despacio, sin que la pelvis baje entre repeticiones.'},
+        Object.assign({code:'G'}, WALK)
+      ]},
+      COOL_PIERNA
+    ]
+  },
+  {
+    key:'mar', day:'Martes', focus:'Espalda, hombros y abdomen', accent:'#3D63BE',
+    blocks:[
+      WARM_STD,
+      {title:'Entrenamiento', meta:'series combinadas · 4 rondas cada una', items:[
+        {pair:'A', note:'A1 y A2 seguidos, sin descanso. 1 min al terminar la pareja.', items:[
+          {code:'A1', name:'Bent Over Dumbbell Row', es:'Remo inclinado con mancuernas',
+           video:V.row, spec:{rondas:'4', reps:'12-15', peso:'mancuernas 5 lb'},
+           cues:'De pie, bisagra de cadera hasta que el tronco quede casi paralelo al suelo, espalda plana. Lleva los codos hacia atrás juntando los omóplatos, sin tirar con los bíceps ni levantar el tronco.'},
+          {code:'A2', name:'Dumbbell Lateral Raise', es:'Elevación lateral con mancuernas',
+           video:V.latraise, spec:{rondas:'4', reps:'12-15', peso:'mancuernas 5 lb', descanso:'1 min'},
+           cues:'De pie con las mancuernas a los lados y los codos apenas flexionados. Sube los brazos hasta la altura de los hombros, no más, y baja controlando. Sin balancear el cuerpo.'}
+        ]},
+        {pair:'B', note:'B1 y B2 seguidos, sin descanso. 1 min al terminar la pareja.', items:[
+          {code:'B1', name:'Bent Over Lateral Raise', es:'Elevación lateral inclinada, deltoide posterior',
+           video:V.reardelt, spec:{rondas:'4', reps:'12-15', peso:'mancuernas 5 lb'},
+           cues:'Tronco inclinado hacia adelante y brazos colgando. Abre los brazos hacia los lados llevando los codos hacia atrás, como si separaras los omóplatos. Cuello relajado.'},
+          {code:'B2', name:'Neutral Grip Seated Dumbbell Shoulder Press', es:'Press de hombro sentada, agarre neutro',
+           video:V.press, spec:{rondas:'4', reps:'12-15', peso:'mancuernas 5 lb', descanso:'1 min'},
+           cues:'Sentada con la espalda apoyada, mancuernas a la altura de los hombros y palmas enfrentadas. Empuja hacia arriba sin bloquear de golpe los codos y baja controlando hasta la altura de la barbilla.'}
+        ]},
+        {pair:'C', note:'C1 y C2 seguidos, sin descanso. 1 min al terminar la pareja.', items:[
+          {code:'C1', name:'Single Arm Dumbbell Row', es:'Remo a una mano',
+           video:V.onearmrow, spec:{rondas:'4', reps:'12-15 por brazo', peso:'mancuerna 5 lb'},
+           cues:'Apoya una mano y una rodilla en un banco, la otra mano sujeta la mancuerna. Tira del codo hacia la cadera manteniendo la espalda plana y sin rotar el tronco.'},
+          {code:'C2', name:'Dumbbell Frontal Raise', es:'Elevación frontal con mancuerna',
+           video:V.frontraise, spec:{rondas:'4', reps:'12-15', peso:'mancuerna 5 lb', descanso:'1 min'},
+           cues:'De pie, brazos al frente del cuerpo. Sube hasta la altura de los hombros con los codos casi rectos y baja despacio. No uses impulso de la espalda baja.'}
+        ]},
+        {code:'D', name:'Circuito de piso pélvico', es:'5 ejercicios seguidos',
+         video:null, spec:{series:'3', tiempo:'30 seg por ejercicio', 'descanso entre ejercicios':'20 seg', 'descanso entre series':'1 min'},
+         cues:'Haz los cinco ejercicios en orden, 30 segundos cada uno con 20 segundos de pausa entre ellos. Al terminar la vuelta, descansa 1 minuto y repite hasta completar 3 series.',
+         circuit:PISO_PELVICO_BASE},
+        Object.assign({code:'E'}, WALK)
+      ]},
+      COOL_STD
+    ]
+  },
+  {
+    key:'mie', day:'Miércoles', focus:'Abdomen y cardio', accent:'#1F8399',
+    blocks:[
+      WARM_STD,
+      {title:'Entrenamiento', meta:'día de core y caminata', items:[
+        {code:'A', name:'Circuito de piso pélvico', es:'6 ejercicios seguidos',
+         video:null, spec:{series:'6', tiempo:'30 seg por ejercicio', 'descanso entre ejercicios':'20 seg', 'descanso entre series':'1 min'},
+         cues:'Hoy son 6 series del circuito e incluye un ejercicio extra al final: 30 segundos por ejercicio, 20 de pausa entre ellos y 1 minuto entre series.',
+         circuit:PISO_PELVICO_BASE.concat([PISO_PELVICO_EXTRA])},
+        Object.assign({code:'B'}, WALK)
+      ]},
+      COOL_STD
+    ]
+  },
+  {
+    key:'jue', day:'Jueves', focus:'Glúteo y femoral', accent:'#2A8763',
+    blocks:[
+      WARM_PIERNA,
+      {title:'Entrenamiento', meta:'4 rondas por ejercicio · 1 min de descanso entre rondas', items:[
+        {code:'A', name:'Kettlebell Glute Bridge', es:'Puente de glúteo con peso',
+         video:V.kbbridge, spec:{rondas:'4', reps:'20', peso:'5 lb (las dos mancuernas)', descanso:'1 min'},
+         cues:'Boca arriba con las rodillas dobladas y el peso sobre la cadera. Sube la pelvis apretando glúteos hasta alinear rodilla, cadera y hombro, y baja sin dejar caer el peso.'},
+        {code:'B', name:'Banded Seated Hip Abduction', es:'Apertura de cadera sentada con banda',
+         video:V.seatedabd, spec:{rondas:'4', reps:'15-20', material:'banda fuerte', descanso:'1 min'},
+         cues:'Sentada en una silla con la banda por encima de las rodillas. Inclina un poco el tronco hacia adelante y abre las rodillas contra la banda, cerrando despacio. El trabajo se siente en la parte lateral del glúteo.'},
+        {code:'C', name:'Dumbbell Hip Thrust', es:'Empuje de cadera con mancuernas',
+         video:V.hipthrust, spec:{rondas:'4', reps:'12-15', peso:'5 lb (las dos mancuernas)', descanso:'1 min'},
+         cues:'Apoya la parte alta de la espalda en un banco, pies firmes en el suelo y el peso sobre la cadera. Sube hasta que el cuerpo quede recto de hombros a rodillas y aprieta arriba un segundo, sin hiperextender la espalda baja.'},
+        {code:'D', name:'Dumbbell Sumo Squat', es:'Sentadilla sumo con mancuerna',
+         video:V.sumo, spec:{rondas:'4', reps:'10-12', peso:'mancuerna 5 lb', descanso:'1 min'},
+         cues:'Pies anchos con puntas hacia fuera y la mancuerna entre las piernas. Baja con el pecho alto empujando las rodillas hacia fuera y sube apretando glúteos.'},
+        {code:'E', name:'Dumbbell Romanian Deadlift', es:'Peso muerto rumano con mancuernas',
+         video:V.rdl, spec:{rondas:'4', reps:'15', peso:'mancuernas 5 lb', descanso:'1 min'},
+         cues:'De pie con las mancuernas delante de los muslos y las rodillas apenas flexionadas. Lleva la cadera hacia atrás bajando el peso pegado a las piernas, con la espalda plana, hasta sentir tensión en los isquiotibiales. Sube empujando la cadera hacia adelante.'},
+        Object.assign({code:'F'}, WALK)
+      ]},
+      COOL_PIERNA
+    ]
+  },
+  {
+    key:'vie', day:'Viernes', focus:'Bíceps, tríceps y abdomen', accent:'#9B4FBF',
+    blocks:[
+      WARM_STD,
+      {title:'Entrenamiento', meta:'series combinadas · 4 rondas cada una', items:[
+        {pair:'A', note:'A1 y A2 seguidos, sin descanso. 1 min al terminar la pareja.', items:[
+          {code:'A1', name:'Dumbbell Bicep Curl', es:'Curl de bíceps con mancuernas',
+           video:V.curl, spec:{rondas:'4', reps:'12-15', peso:'mancuernas 5 lb'},
+           cues:'De pie con los codos pegados al costado. Sube la mancuerna girando la palma hacia arriba y aprieta el bíceps arriba. Baja controlando; los codos no se van hacia adelante.'},
+          {code:'A2', name:'Seated Overhead Dumbbell Tricep Extension', es:'Extensión de tríceps sobre la cabeza, sentada',
+           video:V.ohtricep, spec:{rondas:'4', reps:'12-15', peso:'mancuerna 5 lb', descanso:'1 min'},
+           cues:'Sentada con la espalda apoyada, sujeta la mancuerna con las dos manos por encima de la cabeza. Baja doblando solo los codos, que se quedan apuntando al techo, y estira arriba sin bloquear de golpe.'}
+        ]},
+        {pair:'B', note:'B1 y B2 seguidos, sin descanso. 1 min al terminar la pareja.', items:[
+          {code:'B1', name:'Seated Dumbbell Curl', es:'Curl de bíceps sentada',
+           video:V.seatedcurl, spec:{rondas:'4', reps:'12-15', peso:'mancuernas 5 lb'},
+           cues:'Sentada al borde de un banco con los brazos colgando a los lados. Sube sin balancear el tronco: al estar sentada se elimina el impulso y el bíceps trabaja más.'},
+          {code:'B2', name:'Triceps Kickback', es:'Patada de tríceps',
+           video:V.kickback, spec:{rondas:'4', reps:'12', peso:'mancuerna 5 lb', descanso:'1 min'},
+           cues:'Tronco inclinado hacia adelante con el codo pegado al costado y levantado a la altura de la espalda. Estira el antebrazo hacia atrás hasta que el brazo quede recto y vuelve despacio. Solo se mueve el antebrazo.'}
+        ]},
+        {pair:'C', note:'C1 y C2 seguidos, sin descanso. 1 min al terminar la pareja.', items:[
+          {code:'C1', name:'Hammer Curl', es:'Curl martillo',
+           video:V.hammer, spec:{rondas:'4', reps:'15', peso:'mancuernas 5 lb'},
+           cues:'Igual que el curl normal pero con las palmas enfrentadas todo el recorrido, como si sujetaras un martillo. Codos quietos al costado.'},
+          {code:'C2', name:'Dual Dumbbell Bench French Press', es:'Press francés tumbada con dos mancuernas',
+           video:V.french, spec:{rondas:'4', reps:'8-10', peso:'mancuernas 5 lb', descanso:'1 min'},
+           cues:'Tumbada en un banco con las mancuernas sobre el pecho y los brazos estirados. Baja doblando los codos hacia la frente o las orejas, manteniendo los brazos en el mismo sitio, y estira de nuevo.'}
+        ]},
+        {code:'D', name:'Circuito de piso pélvico', es:'5 ejercicios seguidos',
+         video:null, spec:{series:'3', tiempo:'30 seg por ejercicio', 'descanso entre ejercicios':'20 seg', 'descanso entre series':'1 min'},
+         cues:'Cinco ejercicios en orden, 30 segundos cada uno con 20 de pausa. Al cerrar la vuelta descansa 1 minuto y repite hasta 3 series.',
+         circuit:PISO_PELVICO_BASE},
+        Object.assign({code:'E'}, WALK)
+      ]},
+      COOL_STD
+    ]
+  }
+];
+
+/* ============================================================
+   Utilidades
+   ============================================================ */
+
+const SPEC_LABEL = {rondas:'Rondas', reps:'Repeticiones', tiempo:'Tiempo', peso:'Peso',
+  descanso:'Descanso', material:'Material', series:'Series'};
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function fmt(s){ return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+
+function parseDur(str){
+  if(!str) return null;
+  const s = String(str).toLowerCase();
+  let m = s.match(/(\d+):(\d{2})/);        if(m) return +m[1]*60 + +m[2];
+  m = s.match(/(\d+)\s*hora/);             if(m) return +m[1]*3600;
+  m = s.match(/(\d+)\s*min/);              if(m) return +m[1]*60;
+  m = s.match(/(\d+)\s*seg/);              if(m) return +m[1];
+  return null;
+}
+
+function previewHTML(id, name){
+  if(!id) return '';
+  const url = 'https://www.youtube.com/watch?v=' + id;
+  return `<div>
+    <a class="preview" href="${url}" target="_blank" rel="noopener" aria-label="Ver video de ${esc(name)} en YouTube">
+      <img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="Imagen de referencia de ${esc(name)}" loading="lazy">
+      <span class="play"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span></span>
+    </a>
+    <a class="vlink" href="${url}" target="_blank" rel="noopener">Ver video</a>
+  </div>`;
+}
+
+function chipsHTML(spec){
+  if(!spec) return '';
+  const order = ['rondas','series','reps','tiempo','peso','material','descanso'];
+  const keys = Object.keys(spec).sort((a,b)=>{
+    const ia=order.indexOf(a), ib=order.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+  return '<div class="chips">' + keys.map(k=>{
+    const rest = /descanso/i.test(k);
+    let txt;
+    if(k==='rondas')      txt = spec[k] + ' rondas';
+    else if(k==='series') txt = spec[k] + ' series';
+    else if(k==='reps')   txt = spec[k] + ' reps';
+    else if(rest)         txt = (k==='descanso' ? '' : k.replace('descanso ','') + ' ') + spec[k];
+    else                  txt = spec[k];
+    return `<span class="chip${rest?' rest':''}">${esc(txt)}</span>`;
+  }).join('') + '</div>';
+}
+
+function specListHTML(spec){
+  if(!spec) return '';
+  return '<ul class="spec">' + Object.keys(spec).map(k=>{
+    const label = SPEC_LABEL[k] || (k.charAt(0).toUpperCase()+k.slice(1));
+    return `<li>${esc(label)}: <b>${esc(spec[k])}</b></li>`;
+  }).join('') + '</ul>';
+}
+
+function timerBtn(label, secs){
+  return `<button class="timer" type="button" data-secs="${secs}" data-init="${secs}">
+    <span class="tlabel">${esc(label)}</span><span class="tclock">${fmt(secs)}</span>
+  </button>`;
+}
+
+function timersHTML(spec){
+  if(!spec) return '';
+  const out = [];
+  const add = (label,str)=>{ const d = parseDur(str); if(d && d<=600) out.push([label,d]); };
+  add('Ejercicio', spec.tiempo);
+  Object.keys(spec).forEach(k=>{
+    if(!/descanso/i.test(k)) return;
+    const label = k==='descanso' ? 'Descanso' : k.charAt(0).toUpperCase()+k.slice(1);
+    add(label, spec[k]);
+  });
+  if(!out.length) return '';
+  return '<div class="timers">' + out.map(t=>timerBtn(t[0],t[1])).join('') + '</div>';
+}
+
+function circuitHTML(list){
+  return '<ol class="circuit">' + list.map(s=>`<li><div class="cgrid">
+      ${previewHTML(s.video, s.name)}
+      <div>
+        <p class="nm">${esc(s.name)} <span style="color:var(--ink-faint);font-weight:500">· ${esc(s.es)}</span></p>
+        <p>${esc(s.cues)}</p>
+        <div class="timers">${timerBtn('Ejercicio',30)}${timerBtn('Pausa',20)}</div>
+      </div>
+    </div></li>`).join('') + '</ol>';
+}
+
+function exerciseHTML(ex){
+  return `<article class="ex">
+    <div class="ex-head">
+      <button class="tick" type="button" aria-pressed="false" aria-label="Marcar ${esc(ex.name)} como hecho">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+      </button>
+      <button class="ex-toggle" type="button" aria-expanded="false">
+        <span class="ex-title">
+          <span>${ex.code?`<span class="code">${esc(ex.code)}</span>`:''}<span class="name">${esc(ex.name)}</span></span>
+          ${ex.es?`<span class="es">${esc(ex.es)}</span>`:''}
+          ${chipsHTML(ex.spec)}
+        </span>
+        <svg class="caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="ex-body">
+      ${previewHTML(ex.video, ex.name)}
+      <div class="how">
+        <h4>Cómo se hace</h4>
+        <p>${esc(ex.cues)}</p>
+        ${specListHTML(ex.spec)}
+        ${timersHTML(ex.spec)}
+      </div>
+      ${ex.circuit?circuitHTML(ex.circuit):''}
+    </div>
+  </article>`;
+}
+
+function blockHTML(b){
+  const body = b.items.map(it=>{
+    if(it.pair){
+      return `<div class="pair">
+        <p class="pair-note">Serie combinada ${esc(it.pair)} — ${esc(it.note)}</p>
+        ${it.items.map(exerciseHTML).join('')}
+      </div>`;
+    }
+    return exerciseHTML(it);
+  }).join('');
+  return `<section class="block">
+    <div class="block-head"><h3>${esc(b.title)}</h3><span class="meta">${esc(b.meta)}</span></div>
+    ${body}
+  </section>`;
+}
+
+/* ============================================================
+   Montaje
+   ============================================================ */
+
+const tabsEl = document.getElementById('tabs');
+const daysEl = document.getElementById('days');
+
+DAYS.forEach((d,i)=>{
+  const t = document.createElement('button');
+  t.className='tab'; t.type='button'; t.setAttribute('role','tab');
+  t.setAttribute('aria-selected', i===0?'true':'false');
+  t.setAttribute('aria-controls','panel-'+d.key);
+  t.style.setProperty('--tabc', d.accent);
+  t.innerHTML = `${d.day}<small>${esc(d.focus)}</small>`;
+  t.addEventListener('click', ()=>select(i));
+  tabsEl.appendChild(t);
+
+  const p = document.createElement('section');
+  p.className = 'day' + (i===0?' on':'');
+  p.id = 'panel-'+d.key;
+  p.setAttribute('role','tabpanel');
+  p.style.setProperty('--accent', d.accent);
+  p.style.setProperty('--accent-wash', d.accent+'1f');
+  p.innerHTML = `
+    <div class="day-head">
+      <div>
+        <h2>${d.day}</h2>
+        <div class="focus">${esc(d.focus)}</div>
+      </div>
+      <div class="progress">
+        <span class="ptext">0 de 0 hechos</span>
+        <div class="bar"><i></i></div>
+        <div class="day-actions" style="justify-content:flex-end">
+          <button class="btn btn-log" type="button">Guardar entrenamiento de hoy</button>
+          <span class="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>Registrado hoy</span>
+        </div>
+      </div>
+    </div>
+    ${d.blocks.map(blockHTML).join('')}`;
+  daysEl.appendChild(p);
+  p.querySelectorAll('.ex').forEach((el,n)=>{ el.dataset.ex = n; });
+  p.dataset.key = d.key;
+});
+
+/* ============================================================
+   Registro: almacenamiento y pestaña de historial
+   ============================================================ */
+
+const STORE_KEY = 'registro-entrenamiento';
+const DAY_BY_KEY = {};
+DAYS.forEach(d=>{ DAY_BY_KEY[d.key] = d; });
+
+let LOG = {};                  // { 'YYYY-MM-DD': { lun:{h:[0,3],c:true} } }
+let canStore = false;
+let memoria = null;            // último recurso si no hay almacenamiento
+
+/* Adaptador: usa el almacenamiento de Claude si existe, si no el del
+   navegador (que es lo que aplica cuando corre como app instalada). */
+const store = {
+  async get(){
+    if(window.storage){
+      try{
+        const r = await window.storage.get(STORE_KEY);
+        return r && r.value ? r.value : null;
+      }catch(err){ return null; }        // la clave aún no existe
+    }
+    try{ return window.localStorage.getItem(STORE_KEY); }
+    catch(err){ return memoria; }
+  },
+  async set(value){
+    if(window.storage){
+      try{ await window.storage.set(STORE_KEY, value); return true; }
+      catch(err){ return false; }
+    }
+    try{ window.localStorage.setItem(STORE_KEY, value); return true; }
+    catch(err){ memoria = value; return false; }
+  },
+  available(){
+    if(window.storage) return true;
+    try{
+      const k='__t';
+      window.localStorage.setItem(k,'1');
+      window.localStorage.removeItem(k);
+      return true;
+    }catch(err){ return false; }
+  }
+};
+
+const pad = n => String(n).padStart(2,'0');
+const iso = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const TODAY = iso(new Date());
+
+async function loadLog(){
+  canStore = store.available();
+  const raw = await store.get();
+  if(raw){
+    try{ LOG = JSON.parse(raw) || {}; }catch(err){ LOG = {}; }
+  }
+}
+async function saveLog(){
+  const ok = await store.set(JSON.stringify(LOG));
+  if(!ok) console.warn('El registro no se pudo guardar de forma permanente.');
+}
+
+function dayEntry(date, key, create){
+  if(!LOG[date]){ if(!create) return null; LOG[date] = {}; }
+  if(!LOG[date][key]){ if(!create) return null; LOG[date][key] = {h:[], c:false}; }
+  return LOG[date][key];
+}
+
+/* --- pestaña Registro --- */
+const REG_ACCENT = '#6E4BB8';
+const regTab = document.createElement('button');
+regTab.className='tab'; regTab.type='button'; regTab.setAttribute('role','tab');
+regTab.setAttribute('aria-selected','false');
+regTab.setAttribute('aria-controls','panel-registro');
+regTab.style.setProperty('--tabc', REG_ACCENT);
+regTab.innerHTML = 'Registro<small>tu historial</small>';
+regTab.addEventListener('click', ()=>select(DAYS.length));
+tabsEl.appendChild(regTab);
+
+const regPanel = document.createElement('section');
+regPanel.className='day'; regPanel.id='panel-registro';
+regPanel.setAttribute('role','tabpanel');
+regPanel.style.setProperty('--accent', REG_ACCENT);
+regPanel.style.setProperty('--accent-wash', REG_ACCENT+'1f');
+daysEl.appendChild(regPanel);
+
+let calMonth = new Date().getMonth();
+let calYear  = new Date().getFullYear();
+
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+  'agosto','septiembre','octubre','noviembre','diciembre'];
+const DOW = ['L','M','X','J','V','S','D'];
+
+function doneDates(){
+  return Object.keys(LOG).filter(dt =>
+    Object.keys(LOG[dt]).some(k => LOG[dt][k] && LOG[dt][k].c)
+  ).sort();
+}
+
+function streak(){
+  const set = new Set(doneDates());
+  if(!set.size) return 0;
+  // cuenta días seguidos hacia atrás, permitiendo saltar sábado y domingo
+  let n = 0;
+  const d = new Date();
+  for(let i=0;i<400;i++){
+    const key = iso(d);
+    const wd = d.getDay();               // 0 dom, 6 sáb
+    if(set.has(key)) n++;
+    else if(wd!==0 && wd!==6 && key!==TODAY) break;
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+
+function renderRegistro(){
+  const dates = doneDates();
+  const set = new Set(dates);
+  const thisMonth = dates.filter(dt => {
+    const [y,m] = dt.split('-').map(Number);
+    return y===new Date().getFullYear() && m===new Date().getMonth()+1;
+  }).length;
+  const last = dates[dates.length-1];
+
+  /* calendario: lunes primero */
+  const first = new Date(calYear, calMonth, 1);
+  let lead = (first.getDay()+6)%7;
+  const total = new Date(calYear, calMonth+1, 0).getDate();
+  let cells = '';
+  for(let i=0;i<lead;i++) cells += '<div class="cell pad"></div>';
+  for(let day=1; day<=total; day++){
+    const key = calYear+'-'+pad(calMonth+1)+'-'+pad(day);
+    const hit = set.has(key);
+    let accent = REG_ACCENT;
+    if(hit){
+      const k = Object.keys(LOG[key]).find(k => LOG[key][k].c);
+      if(DAY_BY_KEY[k]) accent = DAY_BY_KEY[k].accent;
+    }
+    cells += `<div class="cell${hit?' hit':''}${key===TODAY?' today':''}"
+      ${hit?`style="background:${accent}"`:''} title="${key}">
+      ${day}${hit?'<i></i>':''}
+    </div>`;
+  }
+
+  /* sesiones recientes */
+  const recent = dates.slice(-12).reverse();
+  const list = recent.map(dt=>{
+    const keys = Object.keys(LOG[dt]).filter(k => LOG[dt][k].c);
+    return keys.map(k=>{
+      const d = DAY_BY_KEY[k];
+      const hechos = (LOG[dt][k].h||[]).length;
+      const fecha = new Date(dt+'T12:00:00').toLocaleDateString('es-ES',
+        {weekday:'long', day:'numeric', month:'long'});
+      return `<li>
+        <span class="dot" style="background:${d?d.accent:REG_ACCENT}"></span>
+        <span class="sess-main">
+          <b>${d?esc(d.focus):esc(k)}</b>
+          <span>${esc(fecha)} · ${hechos} ejercicio${hechos===1?'':'s'} marcado${hechos===1?'':'s'}</span>
+        </span>
+        <button class="del" type="button" data-date="${dt}" data-key="${k}" aria-label="Borrar este registro">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </li>`;
+    }).join('');
+  }).join('');
+
+  regPanel.innerHTML = `
+    <div class="day-head">
+      <div>
+        <h2>Registro</h2>
+        <div class="focus">Los días que entrenaste</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b>${streak()}</b><span>racha actual</span></div>
+      <div class="stat"><b>${thisMonth}</b><span>este mes</span></div>
+      <div class="stat"><b>${dates.length}</b><span>en total</span></div>
+      <div class="stat"><b style="font-size:17px;padding-top:7px">${
+        last ? esc(new Date(last+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short'})) : '—'
+      }</b><span>último entrenamiento</span></div>
+    </div>
+
+    <div class="cal-head">
+      <h3>${MESES[calMonth]} ${calYear}</h3>
+      <div class="nav">
+        <button type="button" id="prevM" aria-label="Mes anterior"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button type="button" id="nextM" aria-label="Mes siguiente"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+    <div class="cal">
+      <div class="cal-grid">${DOW.map(d=>`<div class="dow">${d}</div>`).join('')}</div>
+      <div class="cal-grid">${cells}</div>
+    </div>
+
+    ${list ? `<ul class="sessions">${list}</ul>`
+           : `<div class="empty" style="margin-top:24px">Todavía no hay entrenamientos guardados. Abre el día que entrenaste y pulsa “Guardar entrenamiento de hoy”.</div>`}
+
+    <div class="day-actions" style="margin-top:22px">
+      <button class="btn ghost" type="button" id="expLog">Descargar copia del registro</button>
+      <button class="btn ghost" type="button" id="impLog">Restaurar desde archivo</button>
+      <input type="file" id="impFile" accept="application/json,.json" style="display:none">
+    </div>
+
+    <p class="store-note">${canStore
+      ? 'Tu registro se guarda en este dispositivo y sigue aquí la próxima vez que abras la app, también sin conexión.'
+      : 'Tu navegador está bloqueando el almacenamiento, así que el registro se perderá al cerrar. Revisa que no estés en modo incógnito.'}</p>`;
+
+  regPanel.querySelector('#prevM').addEventListener('click', ()=>{
+    calMonth--; if(calMonth<0){ calMonth=11; calYear--; } renderRegistro();
+  });
+  regPanel.querySelector('#nextM').addEventListener('click', ()=>{
+    calMonth++; if(calMonth>11){ calMonth=0; calYear++; } renderRegistro();
+  });
+  regPanel.querySelector('#expLog').addEventListener('click', exportLog);
+  const file = regPanel.querySelector('#impFile');
+  regPanel.querySelector('#impLog').addEventListener('click', ()=>file.click());
+  file.addEventListener('change', ()=>{ if(file.files[0]) importLog(file.files[0]); file.value=''; });
+
+  regPanel.querySelectorAll('.del').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const {date, key} = b.dataset;
+      if(LOG[date]) delete LOG[date][key];
+      if(LOG[date] && !Object.keys(LOG[date]).length) delete LOG[date];
+      saveLog();
+      renderRegistro();
+      syncDays();
+    });
+  });
+}
+
+/* --- aplicar lo guardado a las pestañas de los días --- */
+function syncDays(){
+  DAYS.forEach(d=>{
+    const panel = daysEl.querySelector('#panel-'+d.key);
+    const e = dayEntry(TODAY, d.key, false);
+    const hechos = new Set(e ? e.h : []);
+    panel.querySelectorAll('.ex').forEach(el=>{
+      const on = hechos.has(+el.dataset.ex);
+      el.classList.toggle('done', on);
+      const t = el.querySelector('.tick');
+      t.setAttribute('aria-pressed', on?'true':'false');
+    });
+    panel.classList.toggle('logged', !!(e && e.c));
+    updateProgress(panel);
+  });
+}
+
+/* --- botón de guardar el día --- */
+daysEl.addEventListener('click', e=>{
+  const btn = e.target.closest('.btn-log');
+  if(!btn) return;
+  const panel = btn.closest('.day');
+  const key = panel.dataset.key;
+  const entry = dayEntry(TODAY, key, true);
+  entry.c = true;
+  panel.classList.add('logged');
+  saveLog();
+  renderRegistro();
+});
+
+loadLog().then(()=>{ syncDays(); renderRegistro(); });
+
+function select(i){
+  [...tabsEl.children].forEach((t,n)=>t.setAttribute('aria-selected', n===i?'true':'false'));
+  [...daysEl.children].forEach((p,n)=>p.classList.toggle('on', n===i));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* desplegar y marcar */
+daysEl.addEventListener('click', e=>{
+  const toggle = e.target.closest('.ex-toggle');
+  if(toggle){
+    const card = toggle.closest('.ex');
+    const open = card.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open?'true':'false');
+    return;
+  }
+  const tick = e.target.closest('.tick');
+  if(tick){
+    const on = tick.getAttribute('aria-pressed')!=='true';
+    const card = tick.closest('.ex');
+    const panel = tick.closest('.day');
+    tick.setAttribute('aria-pressed', on?'true':'false');
+    card.classList.toggle('done', on);
+    updateProgress(panel);
+
+    const idx = +card.dataset.ex;
+    const entry = dayEntry(TODAY, panel.dataset.key, true);
+    const i = entry.h.indexOf(idx);
+    if(on && i < 0) entry.h.push(idx);
+    if(!on && i >= 0) entry.h.splice(i,1);
+    saveLog();
+    renderRegistro();
+  }
+});
+
+function updateProgress(panel){
+  const ptext = panel.querySelector('.ptext');
+  if(!ptext) return;
+  const all  = panel.querySelectorAll('.tick').length;
+  const done = panel.querySelectorAll('.tick[aria-pressed="true"]').length;
+  ptext.textContent = `${done} de ${all} hechos`;
+  panel.querySelector('.bar i').style.width = (all ? done/all*100 : 0) + '%';
+}
+[...daysEl.children].forEach(updateProgress);
+
+/* ============================================================
+   Timers con cuenta regresiva y pip final
+   ============================================================ */
+
+let actx = null;
+function pip(){
+  try{
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if(actx.state === 'suspended') actx.resume();
+    const notes = [880, 880, 1175];
+    notes.forEach((f,i)=>{
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      const t = actx.currentTime + i*0.23;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.4, t+0.015);
+      g.gain.exponentialRampToValueAtTime(0.0008, t + (i===2?0.4:0.18));
+      o.connect(g); g.connect(actx.destination);
+      o.start(t); o.stop(t + 0.45);
+    });
+  }catch(err){ /* sin audio disponible */ }
+}
+
+const timers = new Map();
+
+function resetTimer(btn){
+  const st = timers.get(btn);
+  if(st) clearInterval(st.id);
+  timers.delete(btn);
+  if(!timers.size) letSleep();
+  btn.classList.remove('on','warn');
+  btn.querySelector('.tclock').textContent = fmt(+btn.dataset.init);
+}
+
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('.timer');
+  if(!btn) return;
+
+  if(timers.has(btn)){ resetTimer(btn); return; }
+
+  // un solo timer activo a la vez
+  [...timers.keys()].forEach(resetTimer);
+
+  const total = +btn.dataset.init;
+  let left = total;
+  const clock = btn.querySelector('.tclock');
+
+  btn.classList.add('on');
+  clock.textContent = fmt(left);
+  keepAwake();
+
+  // desbloquea el audio con este gesto del usuario
+  try{
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if(actx.state === 'suspended') actx.resume();
+  }catch(err){}
+
+  const id = setInterval(()=>{
+    left--;
+    if(left <= 5 && left > 0) btn.classList.add('warn');
+    clock.textContent = fmt(Math.max(left,0));
+    if(left <= 0){
+      clearInterval(id);
+      timers.delete(btn);
+      if(!timers.size) letSleep();
+      btn.classList.remove('on','warn');
+      btn.classList.add('done');
+      clock.textContent = '0:00';
+      pip();
+      setTimeout(()=>{
+        btn.classList.remove('done');
+        clock.textContent = fmt(total);
+      }, 1800);
+    }
+  }, 1000);
+
+  timers.set(btn, {id});
+});
+
+/* ============================================================
+   Pantalla encendida mientras corre un timer
+   ============================================================ */
+
+let wakeLock = null;
+async function keepAwake(){
+  if(wakeLock || !('wakeLock' in navigator)) return;
+  try{
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', ()=>{ wakeLock = null; });
+  }catch(err){ wakeLock = null; }
+}
+function letSleep(){
+  if(wakeLock){ try{ wakeLock.release(); }catch(err){} wakeLock = null; }
+}
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState === 'visible' && timers.size) keepAwake();
+});
+
+/* ============================================================
+   Copia de seguridad del registro
+   ============================================================ */
+
+function exportLog(){
+  const blob = new Blob([JSON.stringify(LOG,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'registro-entreno-' + TODAY + '.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+
+function importLog(file){
+  const fr = new FileReader();
+  fr.onload = () => {
+    try{
+      const data = JSON.parse(fr.result);
+      if(typeof data !== 'object' || Array.isArray(data)) throw new Error('formato');
+      Object.keys(data).forEach(dt=>{
+        LOG[dt] = Object.assign({}, LOG[dt], data[dt]);   // une, no reemplaza
+      });
+      saveLog();
+      renderRegistro();
+      syncDays();
+    }catch(err){
+      alert('Ese archivo no tiene el formato del registro.');
+    }
+  };
+  fr.readAsText(file);
+}
+
+/* ============================================================
+   Service worker (para que funcione sin conexión)
+   ============================================================ */
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(err=>{
+      console.warn('El modo sin conexión no se pudo activar:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
