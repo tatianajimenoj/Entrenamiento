@@ -40,22 +40,21 @@
   }
   .wrap{max-width:950px;margin:0 auto;padding:0 20px 72px}
 
-  header.top{padding:46px 0 22px}
+  header.top{padding:44px 0 18px}
+  header.top .rule{
+    display:block;width:64px;height:5px;border-radius:99px;margin-bottom:20px;
+    background:linear-gradient(90deg,#B5721B,#6E4BB8 40%,#1F8399 72%,#2A8763);
+  }
   h1{
     font-family:'Archivo Narrow','Archivo',sans-serif;
     font-weight:700;
-    font-size:clamp(30px,6vw,46px);
-    line-height:1.05;
-    letter-spacing:-0.02em;
+    font-size:clamp(32px,7.5vw,54px);
+    line-height:1.02;
+    letter-spacing:-0.025em;
     margin:0;
     background:linear-gradient(96deg,#6E4BB8,#3D63BE 38%,#1F8399 62%,#2A8763);
     -webkit-background-clip:text;background-clip:text;
     -webkit-text-fill-color:transparent;color:#6E4BB8;
-  }
-  .load-note{
-    margin-top:20px;padding:13px 15px;
-    background:#FFF;border:1px solid var(--rule);border-radius:var(--radius);
-    font-size:13.5px;color:var(--ink-soft);max-width:72ch;
   }
 
   .tabs{
@@ -70,24 +69,20 @@
     flex:0 0 auto;
     appearance:none;border:1px solid var(--rule);background:#FFF;
     color:var(--ink-soft);
-    font-family:inherit;font-size:14px;font-weight:600;
-    padding:9px 15px 8px;border-radius:9px;cursor:pointer;
-    display:flex;flex-direction:column;align-items:flex-start;gap:1px;
+    font-family:inherit;font-size:14.5px;font-weight:600;
+    padding:10px 17px;border-radius:9px;cursor:pointer;
     transition:color .15s,border-color .15s,background .15s;
   }
-  .tab small{font-weight:500;font-size:11.5px;color:var(--ink-faint)}
   .tab:hover{border-color:var(--tabc);color:var(--tabc)}
-  .tab:hover small{color:var(--tabc)}
   .tab[aria-selected="true"]{background:var(--tabc);border-color:var(--tabc);color:#fff}
-  .tab[aria-selected="true"] small{color:#ffffffc9}
   .tab:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
   .day{display:none}
   .day.on{display:block}
+  /* cabecera de las pestañas Menú y Registro */
   .day-head{
     border-top:3px solid var(--accent);
-    padding:20px 0 18px;
-    display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px;justify-content:space-between;
+    padding:20px 0 14px;
   }
   .day-head h2{
     font-family:'Archivo Narrow','Archivo',sans-serif;
@@ -95,14 +90,75 @@
     margin:0;line-height:1.1;
   }
   .day-head .focus{color:var(--accent);font-weight:600;font-size:15px;margin-top:2px}
-  .progress{text-align:right;font-size:13px;color:var(--ink-soft);min-width:138px}
-  .bar{height:5px;background:var(--rule);border-radius:99px;margin-top:6px;overflow:hidden}
-  .bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .25s}
 
-  .block{margin:26px 0 0}
-  .block-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-  .block-head h3{font-size:17px;font-weight:700;margin:0;letter-spacing:-0.01em}
-  .block-head .meta{font-size:13px;color:var(--ink-faint)}
+  /* ---------- cabecera del día ---------- */
+  .hero{
+    margin:12px 0 18px;padding:18px 18px 16px;border-radius:14px;
+    background:linear-gradient(135deg,var(--accent-wash),#fff0 62%),#fff;
+    border:1px solid var(--rule);border-top:3px solid var(--accent);
+    display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;
+  }
+  .hero-main{flex:1 1 180px;min-width:0}
+  .hero-main h2{
+    font-family:'Archivo Narrow','Archivo',sans-serif;
+    font-size:clamp(28px,6.4vw,42px);font-weight:700;letter-spacing:-0.028em;
+    line-height:1;margin:0;color:var(--accent);
+  }
+  .chip-focus{
+    display:inline-block;margin-top:9px;
+    font-size:12.5px;font-weight:600;color:#fff;background:var(--accent);
+    padding:4px 11px;border-radius:7px;
+  }
+  .hero-side{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+  .ring{width:48px;height:48px;transform:rotate(-90deg);flex:0 0 auto}
+  .ring circle{fill:none;stroke-width:4.5}
+  .ring .bg{stroke:var(--rule)}
+  .ring .fg{
+    stroke:var(--accent);stroke-linecap:round;
+    stroke-dasharray:119.4;stroke-dashoffset:119.4;
+    transition:stroke-dashoffset .35s ease;
+  }
+  .hero-stat{display:flex;flex-direction:column;line-height:1.25}
+  .ptext{font-size:15.5px;font-weight:700;font-variant-numeric:tabular-nums}
+  .hero-hint{font-size:11.5px;color:var(--ink-faint)}
+  .hero-actions{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .btn:disabled{
+    background:#fff;border-color:var(--rule);color:var(--ink-faint);
+    cursor:not-allowed;opacity:1;
+  }
+  .log-hint{font-size:12.5px;color:var(--ink-faint)}
+  .day.logged .log-hint{display:none}
+
+  /* ---------- secciones desplegables del día ---------- */
+  .sect{
+    background:#fff;border:1px solid var(--rule);border-radius:12px;
+    margin-bottom:8px;
+  }
+  .sect > summary{
+    list-style:none;cursor:pointer;padding:12px 14px;
+    display:flex;align-items:center;gap:12px;border-radius:12px;
+  }
+  .sect > summary::-webkit-details-marker{display:none}
+  .sect > summary::after{
+    content:'';margin-left:auto;flex:0 0 auto;width:9px;height:9px;
+    border-right:2.2px solid var(--ink-faint);border-bottom:2.2px solid var(--ink-faint);
+    transform:rotate(45deg);transition:transform .2s;
+  }
+  .sect[open] > summary::after{transform:rotate(225deg)}
+  .sect[open]{border-color:var(--sc);box-shadow:0 0 0 1px var(--sc)}
+  .sect-ico{
+    flex:0 0 auto;width:36px;height:36px;border-radius:10px;
+    display:grid;place-items:center;background:var(--sc-wash);color:var(--sc);
+  }
+  .sect-ico svg{
+    width:19px;height:19px;stroke:currentColor;fill:none;
+    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .sect-txt{flex:1 1 auto;min-width:0}
+  .sect-txt b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.012em}
+  .sect-txt span{font-size:12.5px;color:var(--ink-faint)}
+  .sect-body{padding:0 12px 14px}
+  .sect-body > .autos{margin-top:2px}
 
   .pair{border-left:3px solid var(--accent);padding-left:13px;margin:10px 0}
   .pair-note{font-size:12.5px;color:var(--accent);font-weight:600;margin:0 0 7px}
@@ -338,7 +394,6 @@
     background:#fff;border:1px dashed var(--rule);border-radius:var(--radius);
     padding:22px;text-align:center;color:var(--ink-faint);font-size:14px;
   }
-  .sound-tip{font-size:12.5px;color:var(--ink-faint);max-width:44ch;line-height:1.45}
   .store-note{
     margin-top:20px;font-size:12.5px;color:var(--ink-faint);max-width:66ch;line-height:1.5;
   }
@@ -361,7 +416,6 @@
   }
   .auto:active{opacity:.85}
   .auto:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-  .block-head + .autos{margin-top:0;margin-bottom:12px}
 
   /* ---------- temporizador a pantalla completa ---------- */
   .tfs{
@@ -440,20 +494,14 @@
 <div class="wrap">
 
 <header class="top">
-  <h1>Guía de entrenamiento semanal</h1>
-  <div class="load-note">Los pesos son los del plan original (mancuernas de 5 lb, banda fuerte). Ajústalos según cómo te sientas y pregúntale a Valeria si algo no te cuadra.</div>
-  <div class="day-actions">
-    <button class="btn ghost" type="button" id="testSound">Probar el sonido del timer</button>
-    <span class="sound-tip" id="soundTip"></span>
-  </div>
+  <span class="rule"></span>
+  <h1>Guía de entrenamiento<br>semanal para Tati</h1>
 </header>
 
 <nav class="tabs" id="tabs" role="tablist" aria-label="Días de entrenamiento"></nav>
 <main id="days"></main>
 
-<footer>
-  Los videos son de terceros y se abren en YouTube. Si un ejercicio no te queda claro, escríbele a tu coach antes de cargar peso.
-</footer>
+
 </div>
 
 <script>
@@ -1024,6 +1072,40 @@ function exerciseHTML(ex){
   </article>`;
 }
 
+const ICONOS = {
+  calentamiento:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M5.2 5.2l1.8 1.8M17 17l1.8 1.8M18.8 5.2L17 7M7 17l-1.8 1.8"/>',
+  entrenamiento:'<path d="M6.5 7.5v9M3.5 10v4M17.5 7.5v9M20.5 10v4M6.5 12h11"/>',
+  enfriamiento:'<path d="M4 20c0-8 5.5-14.5 16-16.5C20 13 14.5 20 4 20z"/><path d="M4 20c2.8-3.2 6-5.4 10.5-6.5"/>',
+  menu:'<path d="M7 3v6.5a2.2 2.2 0 0 0 4.4 0V3M9.2 9.5V21M16.5 3c1.7 1.8 1.7 5.4 0 7.2V21"/>'
+};
+
+const SECT_COLOR = {
+  calentamiento:'#B5721B', entrenamiento:'var(--accent)',
+  enfriamiento:'#1F8399',  menu:'#2A8763'
+};
+const SECT_WASH = {
+  calentamiento:'#B5721B18', entrenamiento:'var(--accent-wash)',
+  enfriamiento:'#1F839918',  menu:'#2A876318'
+};
+
+function tipoDeBloque(title){
+  const t = String(title).toLowerCase();
+  if(t.startsWith('calent')) return 'calentamiento';
+  if(t.startsWith('enfri'))  return 'enfriamiento';
+  if(t.indexOf('men') === 0) return 'menu';
+  return 'entrenamiento';
+}
+
+function sectHTML(tipo, titulo, resumen, contenido){
+  return `<details class="sect" style="--sc:${SECT_COLOR[tipo]};--sc-wash:${SECT_WASH[tipo]}">
+    <summary>
+      <span class="sect-ico"><svg viewBox="0 0 24 24" aria-hidden="true">${ICONOS[tipo]}</svg></span>
+      <span class="sect-txt"><b>${esc(titulo)}</b><span>${esc(resumen)}</span></span>
+    </summary>
+    <div class="sect-body">${contenido}</div>
+  </details>`;
+}
+
 function blockHTML(b){
   const body = b.items.map(it=>{
     if(it.pair){
@@ -1036,11 +1118,12 @@ function blockHTML(b){
   }).join('');
   const fb = fasesBloque(b);
   const idb = registraPlan(b.title, fb);
-  return `<section class="block">
-    <div class="block-head"><h3>${esc(b.title)}</h3><span class="meta">${esc(b.meta)}</span></div>
-    ${idb===null ? '' : `<div class="autos">${autoBtnHTML(idb, b.title + ' completo', fb)}</div>`}
-    ${body}
-  </section>`;
+  /* Las parejas traen dos ejercicios dentro: se cuentan por separado. */
+  const n = (b.items||[]).reduce((a,it)=>a + (it.pair ? it.items.length : 1), 0);
+  const resumen = `${n} ejercicio${n===1?'':'s'} · ${b.meta}`;
+  const auto = idb===null ? ''
+    : `<div class="autos">${autoBtnHTML(idb, b.title + ' completo', fb)}</div>`;
+  return sectHTML(tipoDeBloque(b.title), b.title, resumen, auto + body);
 }
 
 /* ============================================================
@@ -1231,7 +1314,7 @@ DAYS.forEach((d,i)=>{
   t.setAttribute('aria-selected', i===0?'true':'false');
   t.setAttribute('aria-controls','panel-'+d.key);
   t.style.setProperty('--tabc', d.accent);
-  t.innerHTML = `${d.day}<small>${esc(d.focus)}</small>`;
+  t.textContent = d.day;
   t.addEventListener('click', ()=>select(i));
   tabsEl.appendChild(t);
 
@@ -1242,18 +1325,25 @@ DAYS.forEach((d,i)=>{
   p.style.setProperty('--accent', d.accent);
   p.style.setProperty('--accent-wash', d.accent+'1f');
   p.innerHTML = `
-    <div class="day-head">
-      <div>
+    <div class="hero">
+      <div class="hero-main">
         <h2>${d.day}</h2>
-        <div class="focus">${esc(d.focus)}</div>
+        <span class="chip-focus">${esc(d.focus)}</span>
       </div>
-      <div class="progress">
-        <span class="ptext">0 de 0 hechos</span>
-        <div class="bar"><i></i></div>
-        <div class="day-actions" style="justify-content:flex-end">
-          <button class="btn btn-log" type="button">Guardar entrenamiento de hoy</button>
-          <span class="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>Registrado hoy</span>
+      <div class="hero-side">
+        <svg class="ring" viewBox="0 0 48 48" aria-hidden="true">
+          <circle class="bg" cx="24" cy="24" r="19"/>
+          <circle class="fg" cx="24" cy="24" r="19"/>
+        </svg>
+        <div class="hero-stat">
+          <span class="ptext">0 de 0</span>
+          <span class="hero-hint">ejercicios hechos</span>
         </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn btn-log" type="button" disabled>Guardar entrenamiento de hoy</button>
+        <span class="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>Registrado hoy</span>
+        <span class="log-hint"></span>
       </div>
     </div>
     ${d.blocks.map(blockHTML).join('')}`;
@@ -1261,17 +1351,11 @@ DAYS.forEach((d,i)=>{
   p.querySelectorAll('.ex').forEach((el,n)=>{ el.dataset.ex = n; });
   p.dataset.key = d.key;
 
-  /* La comida que toca este día, según la quincena en la que estemos */
-  const q = quincenaDeHoy();
-  const comida = document.createElement('section');
-  comida.className = 'block';
-  comida.innerHTML = `
-    <div class="block-head">
-      <h3>Comidas de este día</h3>
-      <span class="meta">${q==='q1' ? 'primera quincena · días 1 al 15' : 'segunda quincena · del 16 en adelante'}</span>
-    </div>
-    ${comidasHTML(d.key, q, true)}`;
-  p.appendChild(comida);
+  /* El menú que toca este día, según la quincena en la que estemos */
+  const env = document.createElement('div');
+  env.innerHTML = sectHTML('menu', 'Menú del día', '5 comidas',
+                           comidasHTML(d.key, quincenaDeHoy(), true));
+  p.appendChild(env.firstElementChild);
 });
 
 /* ============================================================
@@ -1349,7 +1433,7 @@ menuTab.className='tab'; menuTab.type='button'; menuTab.setAttribute('role','tab
 menuTab.setAttribute('aria-selected','false');
 menuTab.setAttribute('aria-controls','panel-menu');
 menuTab.style.setProperty('--tabc', MENU_ACCENT);
-menuTab.innerHTML = 'Menú<small>qué comer cada día</small>';
+menuTab.textContent = 'Menú';
 menuTab.addEventListener('click', ()=>select(DAYS.length));
 tabsEl.appendChild(menuTab);
 
@@ -1405,7 +1489,7 @@ regTab.className='tab'; regTab.type='button'; regTab.setAttribute('role','tab');
 regTab.setAttribute('aria-selected','false');
 regTab.setAttribute('aria-controls','panel-registro');
 regTab.style.setProperty('--tabc', REG_ACCENT);
-regTab.innerHTML = 'Registro<small>tu historial</small>';
+regTab.textContent = 'Registro';
 regTab.addEventListener('click', ()=>select(DAYS.length + 1));
 tabsEl.appendChild(regTab);
 
@@ -1627,13 +1711,34 @@ daysEl.addEventListener('click', e=>{
   }
 });
 
+const CIRC = 2 * Math.PI * 19;   // perímetro del anillo de progreso
+
 function updateProgress(panel){
   const ptext = panel.querySelector('.ptext');
   if(!ptext) return;
   const all  = panel.querySelectorAll('.tick').length;
   const done = panel.querySelectorAll('.tick[aria-pressed="true"]').length;
-  ptext.textContent = `${done} de ${all} hechos`;
-  panel.querySelector('.bar i').style.width = (all ? done/all*100 : 0) + '%';
+  const frac = all ? done/all : 0;
+
+  ptext.textContent = `${done} de ${all}`;
+  const fg = panel.querySelector('.ring .fg');
+  if(fg){
+    fg.style.strokeDasharray = CIRC;
+    fg.style.strokeDashoffset = CIRC * (1 - frac);
+  }
+
+  /* Solo se puede guardar el día con todos los ejercicios marcados. */
+  const btn = panel.querySelector('.btn-log');
+  const hint = panel.querySelector('.log-hint');
+  if(btn){
+    const completo = all > 0 && done === all;
+    btn.disabled = !completo;
+    if(hint){
+      const faltan = all - done;
+      hint.textContent = completo ? ''
+        : `Marca los ${faltan} ejercicio${faltan===1?'':'s'} que faltan para poder guardar`;
+    }
+  }
 }
 [...daysEl.children].forEach(updateProgress);
 
@@ -2054,20 +2159,6 @@ function importLog(file){
 /* ============================================================
    Service worker (para que funcione sin conexión)
    ============================================================ */
-
-const testBtn = document.getElementById('testSound');
-const tip = document.getElementById('soundTip');
-testBtn.addEventListener('click', ()=>{
-  const ok = abrirAudio();
-  cancelarAudio();
-  demoSonido();
-  const sesion = ('audioSession' in navigator) ? 'sí' : 'no';
-  const estado = actx ? actx.state : 'no disponible';
-  tip.innerHTML = ok
-    ? 'Deberías oír cinco pip y un tono largo. Si no suena, baja el interruptor de silencio del lado izquierdo del iPhone y sube el volumen con la app abierta.'
-      + `<br><span style="opacity:.7">audio: ${estado} · categoría playback: ${sesion}</span>`
-    : 'Este navegador no deja usar audio. El aviso rojo de pantalla completa sí va a funcionar.';
-});
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
